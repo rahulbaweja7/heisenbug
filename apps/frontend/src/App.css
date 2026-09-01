@@ -43,6 +43,7 @@ html, body, #root {
 .brand {
   font-weight: 700;
   color: #4fc1ff;
+  text-decoration: none;
 }
 
 .challenge-title {

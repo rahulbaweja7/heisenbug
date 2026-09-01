@@ -1,0 +1,118 @@
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import Editor from "@monaco-editor/react";
+import { API_BASE, type Challenge, type SubmitResult } from "./types";
+import "./App.css";
+
+export default function ChallengePage() {
+  const { id } = useParams<{ id: string }>();
+  const [challenge, setChallenge] = useState<Challenge | null>(null);
+  const [activeFile, setActiveFile] = useState<string | null>(null);
+  const [fileContents, setFileContents] = useState<Record<string, string>>({});
+  const [result, setResult] = useState<SubmitResult | null>(null);
+  const [running, setRunning] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(0);
+
+  useEffect(() => {
+    setChallenge(null);
+    setResult(null);
+    fetch(`${API_BASE}/api/challenges/${id}`)
+      .then((r) => r.json())
+      .then((c: Challenge) => {
+        setChallenge(c);
+        setFileContents(c.files);
+        setActiveFile(Object.keys(c.files)[0]);
+        setSecondsLeft(c.meta.timeLimitMinutes * 60);
+      });
+  }, [id]);
+
+  useEffect(() => {
+    if (secondsLeft <= 0) return;
+    const t = setInterval(() => setSecondsLeft((s) => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(t);
+  }, [secondsLeft > 0]);
+
+  async function handleSubmit() {
+    if (!challenge) return;
+    setRunning(true);
+    setResult(null);
+    try {
+      const res = await fetch(
+        `${API_BASE}/api/challenges/${challenge.meta.id}/submit`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ files: fileContents }),
+        }
+      );
+      setResult(await res.json());
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  if (!challenge || !activeFile) {
+    return <div className="loading">Loading challenge...</div>;
+  }
+
+  const mm = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
+  const ss = String(secondsLeft % 60).padStart(2, "0");
+
+  return (
+    <div className="app">
+      <header className="topbar">
+        <div className="title">
+          <Link to="/" className="brand">Heisenbug</Link>
+          <span className="challenge-title">{challenge.meta.title}</span>
+          <span className={`badge badge-${challenge.meta.difficulty}`}>
+            {challenge.meta.difficulty}
+          </span>
+        </div>
+        <div className="timer">{mm}:{ss}</div>
+      </header>
+
+      <div className="body">
+        <aside className="file-tree">
+          {Object.keys(challenge.files).map((path) => (
+            <button
+              key={path}
+              className={path === activeFile ? "file active" : "file"}
+              onClick={() => setActiveFile(path)}
+            >
+              {path}
+            </button>
+          ))}
+        </aside>
+
+        <main className="editor-pane">
+          <Editor
+            height="100%"
+            language={challenge.meta.language}
+            path={activeFile}
+            value={fileContents[activeFile]}
+            onChange={(value) =>
+              setFileContents((prev) => ({ ...prev, [activeFile]: value ?? "" }))
+            }
+            theme="vs-dark"
+            options={{ minimap: { enabled: false }, fontSize: 13 }}
+          />
+        </main>
+
+        <section className="output-pane">
+          <button className="run-btn" onClick={handleSubmit} disabled={running}>
+            {running ? "Running tests..." : "Run tests"}
+          </button>
+          {result && (
+            <div className={`result ${result.passed ? "pass" : "fail"}`}>
+              <div className="result-heading">
+                {result.passed ? "All tests passed" : "Tests failed"}
+              </div>
+              <pre>{result.stdout}
+{result.stderr}</pre>
+            </div>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}
