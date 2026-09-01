@@ -1,0 +1,11 @@
+{
+  "id": "009-accumulation-reset-category-totals",
+  "title": "Category Totals Leak Into Each Other",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 20,
+  "bugCategories": ["accumulation-reset"],
+  "filesVisible": ["src/totals.py"],
+  "entryTest": "tests/test_totals.py",
+  "description": "`total_per_category(items)` receives a list of `{\"category\": str, \"amount\": number}` items and should return a dict mapping each category to the sum of its own amounts. Right now totals from one category are bleeding into the next. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`total_per_category(items: list[dict]) -> dict[str, float]`\n\n**Example**\n`[{\"category\": \"food\", \"amount\": 10}, {\"category\": \"gas\", \"amount\": 5}, {\"category\": \"food\", \"amount\": 3}]` -> `{\"food\": 13, \"gas\": 5}`."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "008-off-by-one-slicing-recent",
+  "title": "Recent Transactions List Drops the Latest One",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["off-by-one"],
+  "filesVisible": ["src/transactions.py"],
+  "entryTest": "tests/test_transactions.py",
+  "description": "`recent_transactions(transactions, n)` should return the last `n` transactions from the list, in their original order (most recent last). Right now the slice boundaries are off. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`recent_transactions(transactions: list, n: int) -> list`\n\n**Example**\n`recent_transactions([\"a\", \"b\", \"c\", \"d\"], 2)` -> `[\"c\", \"d\"]`."
+}

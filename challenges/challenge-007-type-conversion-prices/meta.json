@@ -1,0 +1,11 @@
+{
+  "id": "007-type-conversion-prices",
+  "title": "Cart Total Drops the Cents",
+  "language": "python",
+  "difficulty": "easy",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["type-conversion"],
+  "filesVisible": ["src/checkout.py"],
+  "entryTest": "tests/test_checkout.py",
+  "description": "`total_price(price_strings)` receives price tags as strings like `\"12.50\"` and should return their sum as a float. Right now it either crashes or silently truncates the cents. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`total_price(price_strings: list[str]) -> float`\n\n**Example**\n`total_price([\"12.50\", \"3.25\"])` -> `15.75`."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "005-edge-case-average-rating",
+  "title": "Average Rating Crashes on Empty Input",
+  "language": "python",
+  "difficulty": "easy",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["edge-case"],
+  "filesVisible": ["src/ratings.py"],
+  "entryTest": "tests/test_ratings.py",
+  "description": "`average_rating(ratings)` should return the average of a list of star ratings, or `0.0` if the product has no ratings yet. Right now it crashes instead of handling the empty case. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`average_rating(ratings: list[int]) -> float`\n\n**Example**\n`average_rating([4, 5, 3])` -> `4.0`, `average_rating([])` -> `0.0`."
+}

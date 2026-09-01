@@ -1,0 +1,11 @@
+{
+  "id": "010-multi-bug-leaderboard",
+  "title": "Leaderboard Ranking Has Two Separate Bugs",
+  "language": "python",
+  "difficulty": "hard",
+  "timeLimitMinutes": 25,
+  "bugCategories": ["wrong-comparison", "off-by-one"],
+  "filesVisible": ["src/leaderboard.py"],
+  "entryTest": "tests/test_leaderboard.py",
+  "description": "This one has **two independent bugs**. `rank_players(players)` should sort players by score, highest first. `top_n_average(players, n)` should average the scores of the top `n` players (after ranking). Both are currently wrong in different ways. Find both bugs and fix them so every hidden test passes.\n\n**Function signatures**\n`rank_players(players: list[dict]) -> list[dict]`\n`top_n_average(players: list[dict], n: int) -> float`\n\n**Example**\nPlayers with scores `[10, 30, 20]`: `rank_players` -> scores in order `[30, 20, 10]`. `top_n_average(players, 2)` -> average of the top 2 scores, `25.0`."
+}

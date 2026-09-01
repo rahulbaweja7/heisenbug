@@ -1,0 +1,11 @@
+{
+  "id": "006-wrong-api-top-scores",
+  "title": "Top Scores Crashes and Mutates the Input",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["wrong-api-usage"],
+  "filesVisible": ["src/leaderboard.py"],
+  "entryTest": "tests/test_leaderboard.py",
+  "description": "`top_scores(scores, n)` should return the top `n` scores in descending order, without modifying the caller's original list. Right now it crashes, and even fixing the crash it would still mutate the input. Find the bug(s) and fix them so every hidden test passes.\n\n**Function signature**\n`top_scores(scores: list[int], n: int) -> list[int]`\n\n**Example**\n`top_scores([7, 2, 9, 4], 2)` -> `[9, 7]`, and the original `scores` list must be unchanged afterward."
+}
