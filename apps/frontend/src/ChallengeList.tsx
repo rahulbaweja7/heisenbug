@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { API_BASE, type Meta } from "./types";
 import "./ChallengeList.css";
 
+const DIFFICULTIES = ["all", "easy", "medium", "hard"] as const;
+
 export default function ChallengeList() {
   const [challenges, setChallenges] = useState<Meta[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,51 +32,88 @@ export default function ChallengeList() {
 
   return (
     <div className="list-page">
-      <header className="list-header">
-        <span className="brand">Heisenbug</span>
-        <p className="tagline">Practice the new Amazon-style debugging OA format.</p>
+      <div className="glow" aria-hidden="true" />
+
+      <header className="hero">
+        <span className="eyebrow">Practice platform</span>
+        <h1 className="brand">
+          Heisen<span className="brand-accent">bug</span>
+        </h1>
+        <p className="tagline">
+          Practice the new Amazon-style debugging OA format — get dropped
+          into a broken codebase, find the bug, make the tests green.
+        </p>
       </header>
 
-      <div className="filters">
-        <label>
-          Difficulty
-          <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
-            <option value="all">All</option>
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-        </label>
-        <label>
-          Category
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="all">All</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
+      <div className="toolbar">
+        <div className="filter-group">
+          <span className="filter-label">Difficulty</span>
+          <div className="pill-row">
+            {DIFFICULTIES.map((d) => (
+              <button
+                key={d}
+                className={`pill pill-${d} ${difficulty === d ? "active" : ""}`}
+                onClick={() => setDifficulty(d)}
+              >
+                {d === "all" ? "All" : d}
+              </button>
             ))}
-          </select>
-        </label>
+          </div>
+        </div>
+
+        <div className="filter-group">
+          <span className="filter-label">Category</span>
+          <div className="pill-row">
+            <button
+              className={`pill ${category === "all" ? "active" : ""}`}
+              onClick={() => setCategory("all")}
+            >
+              All
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                className={`pill ${category === cat ? "active" : ""}`}
+                onClick={() => setCategory(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {loading && <div className="loading">Loading challenges...</div>}
+      <div className="result-count">
+        {!loading &&
+          `${filtered.length} challenge${filtered.length === 1 ? "" : "s"}`}
+      </div>
 
-      {!loading && filtered.length === 0 && (
-        <div className="empty">No challenges match these filters.</div>
+      {loading && (
+        <div className="state-message loading">
+          <span className="spinner" />
+          Loading challenges...
+        </div>
       )}
 
-      <ul className="challenge-cards">
+      {!loading && filtered.length === 0 && (
+        <div className="state-message empty">No challenges match these filters.</div>
+      )}
+
+      <ul className="challenge-grid">
         {filtered.map((c) => (
           <li key={c.id}>
-            <Link to={`/challenge/${c.id}`} className="challenge-card">
+            <Link
+              to={`/challenge/${c.id}`}
+              className={`challenge-card difficulty-${c.difficulty}`}
+            >
               <div className="card-top">
                 <span className="card-title">{c.title}</span>
                 <span className={`badge badge-${c.difficulty}`}>{c.difficulty}</span>
               </div>
               <div className="card-meta">
-                <span>{c.language}</span>
-                <span>{c.timeLimitMinutes} min</span>
+                <span className="meta-item">{c.language}</span>
+                <span className="meta-dot" />
+                <span className="meta-item">{c.timeLimitMinutes} min</span>
               </div>
               <div className="card-tags">
                 {c.bugCategories.map((cat) => (
@@ -83,6 +122,9 @@ export default function ChallengeList() {
                   </span>
                 ))}
               </div>
+              <span className="card-arrow" aria-hidden="true">
+                &rarr;
+              </span>
             </Link>
           </li>
         ))}
