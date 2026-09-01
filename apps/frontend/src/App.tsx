@@ -1,12 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ChallengeList from "./ChallengeList";
+import LandingPage from "./LandingPage";
+import ChallengesPage from "./ChallengesPage";
 import ChallengePage from "./ChallengePage";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<ChallengeList />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/challenges" element={<ChallengesPage />} />
         <Route path="/challenge/:id" element={<ChallengePage />} />
       </Routes>
     </BrowserRouter>
