@@ -188,6 +188,17 @@ export default function ChallengePage() {
           <div className="cp-console">
             {!result && (
               <div className="cp-console-placeholder">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  className="cp-console-icon"
+                >
+                  <path d="M8 9l3 3-3 3" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M13 15h3" strokeLinecap="round" />
+                  <rect x="3" y="4" width="18" height="16" rx="2" />
+                </svg>
                 Run the tests to see results here.
               </div>
             )}

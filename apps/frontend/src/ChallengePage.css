@@ -320,8 +320,21 @@
 }
 
 .cp-console-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
   color: #666;
   font-size: 13px;
+  text-align: center;
+}
+
+.cp-console-icon {
+  width: 28px;
+  height: 28px;
+  color: #444;
 }
 
 .cp-result {
