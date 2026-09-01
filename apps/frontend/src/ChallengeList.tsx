@@ -36,8 +36,8 @@ export default function ChallengeList() {
 
       <header className="hero">
         <span className="eyebrow">Practice platform</span>
-        <h1 className="brand">
-          Heisen<span className="brand-accent">bug</span>
+        <h1 className="hero-title">
+          Heisen<span className="hero-title-accent">bug</span>
         </h1>
         <p className="tagline">
           Practice the new Amazon-style debugging OA format — get dropped
@@ -108,7 +108,7 @@ export default function ChallengeList() {
             >
               <div className="card-top">
                 <span className="card-title">{c.title}</span>
-                <span className={`badge badge-${c.difficulty}`}>{c.difficulty}</span>
+                <span className={`diff-badge diff-badge-${c.difficulty}`}>{c.difficulty}</span>
               </div>
               <div className="card-meta">
                 <span className="meta-item">{c.language}</span>

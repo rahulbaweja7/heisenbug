@@ -44,7 +44,7 @@
   margin-bottom: 16px;
 }
 
-.brand {
+.hero-title {
   font-size: clamp(36px, 6vw, 52px);
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -52,7 +52,7 @@
   margin: 0;
 }
 
-.brand-accent {
+.hero-title-accent {
   color: #4fc1ff;
 }
 
@@ -219,7 +219,7 @@
   color: #f0f0f0;
 }
 
-.badge {
+.diff-badge {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -229,9 +229,9 @@
   flex-shrink: 0;
 }
 
-.badge-easy { background: rgba(111, 214, 122, 0.14); color: #6fd67a; }
-.badge-medium { background: rgba(224, 184, 74, 0.14); color: #e0b84a; }
-.badge-hard { background: rgba(224, 122, 122, 0.14); color: #e07a7a; }
+.diff-badge-easy { background: rgba(111, 214, 122, 0.14); color: #6fd67a; }
+.diff-badge-medium { background: rgba(224, 184, 74, 0.14); color: #e0b84a; }
+.diff-badge-hard { background: rgba(224, 122, 122, 0.14); color: #e07a7a; }
 
 .card-meta {
   display: flex;
