@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { API_BASE, type Meta } from "./types";
 import { getSolvedIds } from "./progress";
 import "./ChallengesPage.css";
@@ -7,6 +7,7 @@ import "./ChallengesPage.css";
 const DIFFICULTIES = ["all", "easy", "medium", "hard"] as const;
 
 export default function ChallengesPage() {
+  const navigate = useNavigate();
   const [challenges, setChallenges] = useState<Meta[]>([]);
   const [loading, setLoading] = useState(true);
   const [difficulty, setDifficulty] = useState<string>("all");
@@ -127,45 +128,68 @@ export default function ChallengesPage() {
         </div>
       )}
 
-      <ul className="ch-grid">
-        {filtered.map((c) => (
-          <li key={c.id}>
-            <Link
-              to={`/challenge/${c.id}`}
-              className={`ch-card ch-difficulty-${c.difficulty}`}
-            >
-              <div className="ch-card-top">
-                <span className="ch-card-title">
-                  {solvedIds.includes(c.id) && (
-                    <span className="ch-solved-check" title="Solved">
-                      &#10003;
-                    </span>
-                  )}
-                  {c.title}
-                </span>
-                <span className={`ch-diff-badge ch-diff-badge-${c.difficulty}`}>
-                  {c.difficulty}
-                </span>
-              </div>
-              <div className="ch-card-meta">
-                <span className="ch-meta-item">{c.language}</span>
-                <span className="ch-meta-dot" />
-                <span className="ch-meta-item">{c.timeLimitMinutes} min</span>
-              </div>
-              <div className="ch-card-tags">
-                {c.bugCategories.map((cat) => (
-                  <span key={cat} className="ch-tag">
-                    {cat}
-                  </span>
-                ))}
-              </div>
-              <span className="ch-card-arrow" aria-hidden="true">
-                &rarr;
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {!loading && !loadError && filtered.length > 0 && (
+        <div className="ch-table-wrap">
+          <table className="ch-table">
+            <thead>
+              <tr>
+                <th className="ch-col-status" aria-label="Solved" />
+                <th className="ch-col-num">#</th>
+                <th className="ch-col-title">Title</th>
+                <th className="ch-col-tags">Tags</th>
+                <th className="ch-col-diff">Difficulty</th>
+                <th className="ch-col-time">Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((c) => {
+                const num = c.id.match(/^\d+/)?.[0] ?? "";
+                const solved = solvedIds.includes(c.id);
+                return (
+                  <tr
+                    key={c.id}
+                    className="ch-row"
+                    onClick={() => navigate(`/challenge/${c.id}`)}
+                  >
+                    <td className="ch-col-status">
+                      {solved && (
+                        <span className="ch-solved-check" title="Solved">
+                          &#10003;
+                        </span>
+                      )}
+                    </td>
+                    <td className="ch-col-num">{num}</td>
+                    <td className="ch-col-title">
+                      <Link
+                        to={`/challenge/${c.id}`}
+                        className="ch-row-link"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {c.title}
+                      </Link>
+                    </td>
+                    <td className="ch-col-tags">
+                      <div className="ch-card-tags">
+                        {c.bugCategories.map((cat) => (
+                          <span key={cat} className="ch-tag">
+                            {cat}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="ch-col-diff">
+                      <span className={`ch-diff-text ch-diff-text-${c.difficulty}`}>
+                        {c.difficulty}
+                      </span>
+                    </td>
+                    <td className="ch-col-time">{c.timeLimitMinutes} min</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

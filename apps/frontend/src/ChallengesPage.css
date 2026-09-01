@@ -173,117 +173,105 @@
   to { transform: rotate(360deg); }
 }
 
-.ch-grid {
-  list-style: none;
-  margin: 0 auto;
-  padding: 0;
-  max-width: 900px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 14px;
-}
-
-.ch-card {
+.ch-table-wrap {
   position: relative;
-  display: block;
+  max-width: 900px;
+  margin: 0 auto;
   background: #161616;
   border: 1px solid #242424;
-  border-left: 3px solid #333;
-  border-radius: 10px;
-  padding: 18px 40px 18px 18px;
-  text-decoration: none;
-  color: inherit;
-  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.ch-card:hover {
-  border-color: #3a3a3a;
-  background: #1a1a1a;
-  transform: translateY(-2px);
+.ch-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
 }
 
-.ch-card.ch-difficulty-easy:hover { border-left-color: #6fd67a; }
-.ch-card.ch-difficulty-medium:hover { border-left-color: #e0b84a; }
-.ch-card.ch-difficulty-hard:hover { border-left-color: #e07a7a; }
-
-.ch-card-arrow {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translate(-4px, -50%);
-  color: #4fc1ff;
-  opacity: 0;
-  transition: all 0.15s ease;
-  font-size: 16px;
-}
-
-.ch-card:hover .ch-card-arrow {
-  opacity: 1;
-  transform: translate(0, -50%);
-}
-
-.ch-card-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.ch-card-title {
-  font-size: 15px;
+.ch-table thead th {
+  text-align: left;
+  font-size: 11px;
   font-weight: 600;
-  line-height: 1.4;
-  color: #f0f0f0;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #777;
+  padding: 12px 16px;
+  border-bottom: 1px solid #242424;
+}
+
+.ch-col-status {
+  width: 36px;
+}
+
+.ch-col-num {
+  width: 44px;
+  color: #666;
+}
+
+.ch-col-diff,
+.ch-col-time {
+  width: 90px;
+}
+
+.ch-row {
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.ch-row:not(:last-child) td {
+  border-bottom: 1px solid #202020;
+}
+
+.ch-row:hover {
+  background: #1c1c1c;
+}
+
+.ch-row td {
+  padding: 12px 16px;
+  vertical-align: middle;
 }
 
 .ch-solved-check {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: rgba(111, 214, 122, 0.16);
   color: #6fd67a;
-  font-size: 10px;
-  margin-right: 6px;
-  vertical-align: middle;
+  font-size: 11px;
 }
 
-.ch-diff-badge {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  padding: 2px 9px;
-  border-radius: 999px;
-  text-transform: uppercase;
-  flex-shrink: 0;
+.ch-row-link {
+  color: #f0f0f0;
+  font-weight: 600;
+  text-decoration: none;
 }
 
-.ch-diff-badge-easy { background: rgba(111, 214, 122, 0.14); color: #6fd67a; }
-.ch-diff-badge-medium { background: rgba(224, 184, 74, 0.14); color: #e0b84a; }
-.ch-diff-badge-hard { background: rgba(224, 122, 122, 0.14); color: #e07a7a; }
+.ch-row:hover .ch-row-link {
+  color: #4fc1ff;
+}
 
-.ch-card-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.ch-diff-text {
+  font-size: 12.5px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.ch-diff-text-easy { color: #6fd67a; }
+.ch-diff-text-medium { color: #e0b84a; }
+.ch-diff-text-hard { color: #e07a7a; }
+
+.ch-col-time {
   color: #888;
-  font-size: 12px;
-  margin-top: 8px;
-}
-
-.ch-meta-dot {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: #555;
+  font-size: 12.5px;
 }
 
 .ch-card-tags {
   display: flex;
   gap: 6px;
-  margin-top: 12px;
   flex-wrap: wrap;
 }
 
@@ -294,4 +282,11 @@
   padding: 3px 9px;
   border-radius: 999px;
   font-family: "JetBrains Mono", monospace;
+}
+
+@media (max-width: 700px) {
+  .ch-col-tags,
+  .ch-col-time {
+    display: none;
+  }
 }
