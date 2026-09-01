@@ -8,6 +8,7 @@ export type Meta = {
   timeLimitMinutes: number;
   bugCategories: string[];
   filesVisible: string[];
+  description: string;
 };
 
 export type Challenge = { meta: Meta; files: Record<string, string> };

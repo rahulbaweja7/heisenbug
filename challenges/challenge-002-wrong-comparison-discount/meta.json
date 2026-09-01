@@ -5,6 +5,7 @@
   "difficulty": "easy",
   "timeLimitMinutes": 15,
   "bugCategories": ["wrong-comparison"],
+  "description": "`apply_bulk_discount(quantity, unit_price)` should give a 15% discount on orders of 10 units or more, and charge full price below that. Right now the boundary is wrong somewhere. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`apply_bulk_discount(quantity: int, unit_price: float) -> float`\n\n**Example**\n`apply_bulk_discount(10, 10)` -> `85` (10 units qualifies for the discount).",
   "filesVisible": ["src/pricing.py"],
   "entryTest": "tests/test_pricing.py"
 }

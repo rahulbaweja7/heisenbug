@@ -2,7 +2,31 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import { API_BASE, type Challenge, type SubmitResult } from "./types";
-import "./App.css";
+import "./ChallengePage.css";
+
+function DescriptionText({ text }: { text: string }) {
+  const paragraphs = text.split("\n\n");
+  return (
+    <>
+      {paragraphs.map((para, i) => {
+        const parts = para.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).filter(Boolean);
+        return (
+          <p key={i}>
+            {parts.map((part, j) => {
+              if (part.startsWith("**") && part.endsWith("**")) {
+                return <strong key={j}>{part.slice(2, -2)}</strong>;
+              }
+              if (part.startsWith("`") && part.endsWith("`")) {
+                return <code key={j}>{part.slice(1, -1)}</code>;
+              }
+              return <span key={j}>{part}</span>;
+            })}
+          </p>
+        );
+      })}
+    </>
+  );
+}
 
 export default function ChallengePage() {
   const { id } = useParams<{ id: string }>();
@@ -52,66 +76,97 @@ export default function ChallengePage() {
   }
 
   if (!challenge || !activeFile) {
-    return <div className="loading">Loading challenge...</div>;
+    return <div className="cp-loading">Loading challenge...</div>;
   }
 
   const mm = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
   const ss = String(secondsLeft % 60).padStart(2, "0");
+  const lowOnTime = secondsLeft > 0 && secondsLeft <= 60;
 
   return (
-    <div className="app">
-      <header className="topbar">
-        <div className="title">
-          <Link to="/" className="brand">Heisenbug</Link>
-          <span className="challenge-title">{challenge.meta.title}</span>
-          <span className={`badge badge-${challenge.meta.difficulty}`}>
-            {challenge.meta.difficulty}
-          </span>
+    <div className="cp-app">
+      <header className="cp-topbar">
+        <Link to="/" className="cp-brand">
+          Heisenbug
+        </Link>
+        <div className={`cp-timer ${lowOnTime ? "cp-timer-low" : ""}`}>
+          {mm}:{ss}
         </div>
-        <div className="timer">{mm}:{ss}</div>
       </header>
 
-      <div className="body">
-        <aside className="file-tree">
-          {Object.keys(challenge.files).map((path) => (
-            <button
-              key={path}
-              className={path === activeFile ? "file active" : "file"}
-              onClick={() => setActiveFile(path)}
-            >
-              {path}
-            </button>
-          ))}
+      <div className="cp-body">
+        <aside className="cp-description">
+          <h1 className="cp-title">{challenge.meta.title}</h1>
+          <div className="cp-meta-row">
+            <span className={`cp-badge cp-badge-${challenge.meta.difficulty}`}>
+              {challenge.meta.difficulty}
+            </span>
+            <span className="cp-meta-item">{challenge.meta.language}</span>
+            <span className="cp-meta-dot" />
+            <span className="cp-meta-item">{challenge.meta.timeLimitMinutes} min</span>
+          </div>
+          <div className="cp-tags">
+            {challenge.meta.bugCategories.map((cat) => (
+              <span key={cat} className="cp-tag">
+                {cat}
+              </span>
+            ))}
+          </div>
+          <div className="cp-description-body">
+            <DescriptionText text={challenge.meta.description} />
+          </div>
         </aside>
 
-        <main className="editor-pane">
-          <Editor
-            height="100%"
-            language={challenge.meta.language}
-            path={activeFile}
-            value={fileContents[activeFile]}
-            onChange={(value) =>
-              setFileContents((prev) => ({ ...prev, [activeFile]: value ?? "" }))
-            }
-            theme="vs-dark"
-            options={{ minimap: { enabled: false }, fontSize: 13 }}
-          />
-        </main>
+        <main className="cp-workspace">
+          <div className="cp-file-tabs">
+            {Object.keys(challenge.files).map((path) => (
+              <button
+                key={path}
+                className={path === activeFile ? "cp-tab active" : "cp-tab"}
+                onClick={() => setActiveFile(path)}
+              >
+                {path}
+              </button>
+            ))}
+            <div className="cp-file-tabs-spacer" />
+            <button className="cp-run-btn" onClick={handleSubmit} disabled={running}>
+              {running ? "Running..." : "Run tests"}
+            </button>
+          </div>
 
-        <section className="output-pane">
-          <button className="run-btn" onClick={handleSubmit} disabled={running}>
-            {running ? "Running tests..." : "Run tests"}
-          </button>
-          {result && (
-            <div className={`result ${result.passed ? "pass" : "fail"}`}>
-              <div className="result-heading">
-                {result.passed ? "All tests passed" : "Tests failed"}
+          <div className="cp-editor-pane">
+            <Editor
+              height="100%"
+              language={challenge.meta.language}
+              path={activeFile}
+              value={fileContents[activeFile]}
+              onChange={(value) =>
+                setFileContents((prev) => ({ ...prev, [activeFile]: value ?? "" }))
+              }
+              theme="vs-dark"
+              options={{ minimap: { enabled: false }, fontSize: 13 }}
+            />
+          </div>
+
+          <div className="cp-console">
+            {!result && (
+              <div className="cp-console-placeholder">
+                Run the tests to see results here.
               </div>
-              <pre>{result.stdout}
-{result.stderr}</pre>
-            </div>
-          )}
-        </section>
+            )}
+            {result && (
+              <div className={`cp-result ${result.passed ? "pass" : "fail"}`}>
+                <div className="cp-result-heading">
+                  {result.passed ? "All tests passed" : "Tests failed"}
+                </div>
+                <pre>
+                  {result.stdout}
+                  {result.stderr}
+                </pre>
+              </div>
+            )}
+          </div>
+        </main>
       </div>
     </div>
   );

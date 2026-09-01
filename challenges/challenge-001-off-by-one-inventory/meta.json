@@ -5,6 +5,7 @@
   "difficulty": "easy",
   "timeLimitMinutes": 15,
   "bugCategories": ["off-by-one"],
+  "description": "You're given a small inventory service. `count_low_stock(items, threshold)` should return how many items have a quantity at or below `threshold`. It's currently under-counting on some inputs. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`count_low_stock(items: list[dict], threshold: int) -> int`\n\n**Example**\n`items = [{\"quantity\": 1}, {\"quantity\": 5}, {\"quantity\": 2}]`, `threshold = 2` -> `2` (the 1 and the 2 both qualify).",
   "filesVisible": ["src/inventory.py"],
   "entryTest": "tests/test_inventory.py"
 }

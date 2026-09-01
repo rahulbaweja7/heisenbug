@@ -5,6 +5,7 @@
   "difficulty": "medium",
   "timeLimitMinutes": 20,
   "bugCategories": ["state-mutation"],
+  "description": "`Cart.checkout_snapshot()` should return a copy of the cart's items with one-time discounts cleared, for sending to checkout — without touching the live cart. Right now something about the live cart changes too when a snapshot is taken. Find the bug and fix it so every hidden test passes.\n\n**Class**\n`Cart` with `.add(item)` and `.checkout_snapshot()`\n\n**Expected behavior**\nAfter calling `checkout_snapshot()`, the returned list should have `discount_applied: False` on every item, but `cart.items` (the live cart) should be completely unaffected — same length, same discount flags as before.",
   "filesVisible": ["src/cart.py"],
   "entryTest": "tests/test_cart.py"
 }

@@ -5,6 +5,7 @@
   "difficulty": "easy",
   "timeLimitMinutes": 15,
   "bugCategories": ["control-flow"],
+  "description": "`find_missing_fields(form, required_fields)` should return a list of every required field that's missing or empty from a submitted form — not just the first one it finds. Right now it stops too early. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`find_missing_fields(form: dict, required_fields: list[str]) -> list[str]`\n\n**Example**\n`form = {\"name\": \"\", \"email\": \"\", \"phone\": \"555-1234\"}`, `required_fields = [\"name\", \"email\", \"phone\"]` -> `[\"name\", \"email\"]`.",
   "filesVisible": ["src/validator.py"],
   "entryTest": "tests/test_validator.py"
 }
