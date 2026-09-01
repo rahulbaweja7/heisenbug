@@ -9,6 +9,18 @@ import { challengeDir } from "./challenges.js";
 // sandboxing. Per the project plan (section 5.2), this MUST be replaced with
 // Judge0 or an isolated Docker sandbox (no network, CPU/memory/time limits)
 // before this ever runs against untrusted/public submissions.
+
+const TIMEOUT_MS = 10_000;
+const MAX_OUTPUT_BYTES = 50_000;
+
+function capOutput(text) {
+  if (text.length <= MAX_OUTPUT_BYTES) return text;
+  return (
+    text.slice(0, MAX_OUTPUT_BYTES) +
+    `\n\n[output truncated — exceeded ${MAX_OUTPUT_BYTES} byte limit]`
+  );
+}
+
 export async function runSubmission(challengeId, files) {
   const dir = challengeDir(challengeId);
   const workDir = await mkdtemp(path.join(os.tmpdir(), "heisenbug-"));
@@ -27,17 +39,35 @@ export async function runSubmission(challengeId, files) {
     const result = await new Promise((resolve) => {
       const proc = spawn("python3", ["-m", "pytest", "tests", "-v", "--tb=short"], {
         cwd: workDir,
-        timeout: 15_000,
       });
 
       let stdout = "";
       let stderr = "";
+      let timedOut = false;
+
+      const timer = setTimeout(() => {
+        timedOut = true;
+        proc.kill("SIGKILL");
+      }, TIMEOUT_MS);
+
       proc.stdout.on("data", (d) => (stdout += d));
       proc.stderr.on("data", (d) => (stderr += d));
-      proc.on("close", (code) => resolve({ passed: code === 0, stdout, stderr }));
-      proc.on("error", (err) =>
-        resolve({ passed: false, stdout: "", stderr: `runner error: ${err.message}` })
-      );
+      proc.on("close", (code) => {
+        clearTimeout(timer);
+        if (timedOut) {
+          resolve({
+            passed: false,
+            stdout: capOutput(stdout),
+            stderr: `Submission timed out after ${TIMEOUT_MS / 1000}s and was killed.`,
+          });
+          return;
+        }
+        resolve({ passed: code === 0, stdout: capOutput(stdout), stderr: capOutput(stderr) });
+      });
+      proc.on("error", (err) => {
+        clearTimeout(timer);
+        resolve({ passed: false, stdout: "", stderr: `runner error: ${err.message}` });
+      });
     });
 
     return result;
