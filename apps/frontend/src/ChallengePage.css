@@ -14,6 +14,12 @@
   height: 100vh;
   background: #131313;
   color: #ddd;
+  font-size: 14px;
+}
+
+.cp-error-link {
+  color: #4fc1ff;
+  text-decoration: underline;
 }
 
 .cp-topbar {
