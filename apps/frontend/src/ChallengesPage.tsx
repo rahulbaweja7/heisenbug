@@ -40,6 +40,9 @@ export default function ChallengesPage() {
 
   return (
     <div className="ch-page">
+      <div className="ch-bg-grid" aria-hidden="true" />
+      <div className="ch-glow" aria-hidden="true" />
+
       <header className="ch-header">
         <Link to="/" className="ch-brand">
           Heisenbug
