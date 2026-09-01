@@ -1,0 +1,10 @@
+{
+  "id": "001-off-by-one-inventory",
+  "title": "Inventory Count Off-By-One",
+  "language": "python",
+  "difficulty": "easy",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["off-by-one"],
+  "filesVisible": ["src/inventory.py"],
+  "entryTest": "tests/test_inventory.py"
+}
