@@ -57,7 +57,7 @@
 .cp-body {
   flex: 1;
   display: grid;
-  grid-template-columns: 420px 1fr;
+  grid-template-columns: 420px 200px 1fr;
   min-height: 0;
 }
 
@@ -68,6 +68,79 @@
   padding: 28px 28px 60px;
   border-right: 1px solid #262626;
   background: #161616;
+}
+
+/* --- file explorer sidebar --- */
+
+.cp-explorer {
+  overflow-y: auto;
+  padding: 14px 0;
+  border-right: 1px solid #262626;
+  background: #181818;
+}
+
+.cp-explorer-heading {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #666;
+  padding: 0 14px 10px;
+}
+
+.ft-tree {
+  display: flex;
+  flex-direction: column;
+}
+
+.ft-node {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #bbb;
+  font-size: 12.5px;
+  font-family: "JetBrains Mono", monospace;
+  padding: 5px 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ft-node:hover {
+  background: #232323;
+}
+
+.ft-node.active {
+  background: #2a2d2e;
+  color: #fff;
+}
+
+.ft-node.ft-folder {
+  color: #999;
+  cursor: default;
+}
+
+.ft-node.ft-folder:hover {
+  background: transparent;
+}
+
+.ft-icon {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: #6ca0d8;
+}
+
+.ft-folder .ft-icon {
+  color: #e0b84a;
+}
+
+.ft-icon svg {
+  width: 14px;
+  height: 14px;
 }
 
 .cp-title {
@@ -381,5 +454,9 @@
     border-right: none;
     border-bottom: 1px solid #262626;
     max-height: 40vh;
+  }
+
+  .cp-explorer {
+    display: none;
   }
 }
