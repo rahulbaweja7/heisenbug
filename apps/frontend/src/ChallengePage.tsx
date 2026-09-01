@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import { API_BASE, type Challenge, type SubmitResult } from "./types";
 import Markdown from "./Markdown";
+import FileTree from "./FileTree";
 import { markSolved } from "./progress";
 import "./ChallengePage.css";
 
@@ -149,6 +150,15 @@ export default function ChallengePage() {
               </div>
             </div>
           )}
+        </aside>
+
+        <aside className="cp-explorer">
+          <div className="cp-explorer-heading">Explorer</div>
+          <FileTree
+            paths={Object.keys(challenge.files)}
+            activeFile={activeFile}
+            onSelect={setActiveFile}
+          />
         </aside>
 
         <main className="cp-workspace">
