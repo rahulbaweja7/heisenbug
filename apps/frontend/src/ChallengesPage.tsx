@@ -115,6 +115,15 @@ export default function ChallengesPage() {
       {!loading && !loadError && filtered.length === 0 && (
         <div className="ch-state-message ch-empty">
           No challenges match these filters.
+          <button
+            className="ch-clear-filters-btn"
+            onClick={() => {
+              setDifficulty("all");
+              setCategory("all");
+            }}
+          >
+            Clear filters
+          </button>
         </div>
       )}
 

@@ -145,6 +145,21 @@
   font-size: 14px;
 }
 
+.ch-clear-filters-btn {
+  background: transparent;
+  color: #4fc1ff;
+  border: 1px solid rgba(79, 193, 255, 0.3);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ch-clear-filters-btn:hover {
+  background: rgba(79, 193, 255, 0.1);
+}
+
 .ch-spinner {
   width: 14px;
   height: 14px;
