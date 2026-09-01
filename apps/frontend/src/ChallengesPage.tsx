@@ -12,11 +12,16 @@ export default function ChallengesPage() {
   const [difficulty, setDifficulty] = useState<string>("all");
   const [category, setCategory] = useState<string>("all");
   const [solvedIds, setSolvedIds] = useState<string[]>([]);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     fetch(`${API_BASE}/api/challenges`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("failed to load challenges");
+        return r.json();
+      })
       .then((data: Meta[]) => setChallenges(data))
+      .catch(() => setLoadError(true))
       .finally(() => setLoading(false));
     setSolvedIds(getSolvedIds());
   }, []);
@@ -98,7 +103,13 @@ export default function ChallengesPage() {
         </div>
       )}
 
-      {!loading && filtered.length === 0 && (
+      {!loading && loadError && (
+        <div className="ch-state-message ch-empty">
+          Couldn't load challenges. Is the backend running?
+        </div>
+      )}
+
+      {!loading && !loadError && filtered.length === 0 && (
         <div className="ch-state-message ch-empty">
           No challenges match these filters.
         </div>

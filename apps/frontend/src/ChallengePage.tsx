@@ -15,19 +15,25 @@ export default function ChallengePage() {
   const [running, setRunning] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [explanation, setExplanation] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     setChallenge(null);
     setResult(null);
     setExplanation(null);
+    setLoadError(false);
     fetch(`${API_BASE}/api/challenges/${id}`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("not found");
+        return r.json();
+      })
       .then((c: Challenge) => {
         setChallenge(c);
         setFileContents(c.files);
         setActiveFile(Object.keys(c.files)[0]);
         setSecondsLeft(c.meta.timeLimitMinutes * 60);
-      });
+      })
+      .catch(() => setLoadError(true));
   }, [id]);
 
   useEffect(() => {
@@ -71,6 +77,19 @@ export default function ChallengePage() {
     setFileContents(challenge.files);
     setResult(null);
     setExplanation(null);
+  }
+
+  if (loadError) {
+    return (
+      <div className="cp-loading">
+        <div>
+          Couldn't load this challenge.{" "}
+          <Link to="/challenges" className="cp-error-link">
+            Back to challenges
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   if (!challenge || !activeFile) {
