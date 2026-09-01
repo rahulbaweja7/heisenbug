@@ -1,0 +1,11 @@
+{
+  "id": "013-unreachable-branch-categorize",
+  "title": "Refunds Get Categorized as Purchases",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["control-flow"],
+  "filesVisible": ["src/transactions.py"],
+  "entryTest": "tests/test_transactions.py",
+  "description": "`categorize_transaction(amount)` should return `\"refund\"` for negative amounts, `\"purchase\"` for positive amounts, and `\"zero\"` for exactly zero. Refunds are currently being categorized as purchases. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`categorize_transaction(amount: float) -> str`\n\n**Example**\n`categorize_transaction(-25)` -> `\"refund\"`, `categorize_transaction(25)` -> `\"purchase\"`, `categorize_transaction(0)` -> `\"zero\"`."
+}

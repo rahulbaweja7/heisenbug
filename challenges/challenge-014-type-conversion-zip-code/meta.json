@@ -1,0 +1,11 @@
+{
+  "id": "014-type-conversion-zip-code",
+  "title": "Zip Code Loses Its Leading Zero",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["type-conversion"],
+  "filesVisible": ["src/address.py"],
+  "entryTest": "tests/test_address.py",
+  "description": "`normalize_zip_code(zip_str)` should return a 5-digit zip code string, unchanged apart from stripping whitespace. Right now zip codes that start with a `0` (common in the northeastern US) come back shortened. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`normalize_zip_code(zip_str: str) -> str`\n\n**Example**\n`normalize_zip_code(\" 02139 \")` -> `\"02139\"`."
+}

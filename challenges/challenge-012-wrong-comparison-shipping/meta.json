@@ -1,0 +1,11 @@
+{
+  "id": "012-wrong-comparison-shipping",
+  "title": "Free Shipping Excludes the Exact Threshold",
+  "language": "python",
+  "difficulty": "easy",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["wrong-comparison"],
+  "filesVisible": ["src/shipping.py"],
+  "entryTest": "tests/test_shipping.py",
+  "description": "`qualifies_for_free_shipping(cart_total)` should return `True` for orders of $50 or more. Right now an order of exactly $50 doesn't qualify. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`qualifies_for_free_shipping(cart_total: float) -> bool`\n\n**Example**\n`qualifies_for_free_shipping(50)` -> `True`, `qualifies_for_free_shipping(49.99)` -> `False`."
+}

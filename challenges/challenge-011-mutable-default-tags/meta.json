@@ -1,0 +1,11 @@
+{
+  "id": "011-mutable-default-tags",
+  "title": "Tag List Remembers Tags From Previous Calls",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["state-mutation"],
+  "filesVisible": ["src/tags.py"],
+  "entryTest": "tests/test_tags.py",
+  "description": "`add_unique_tag(tag, existing=None)` should return a new list containing `existing`'s tags plus `tag`, without duplicates. Called with no second argument, it's supposed to start fresh each time. Instead, tags from earlier, unrelated calls are leaking in. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`add_unique_tag(tag: str, existing: list[str] | None = None) -> list[str]`\n\n**Example**\n`add_unique_tag(\"urgent\")` -> `[\"urgent\"]`, called again later with a different tag and no `existing` argument should still start from an empty list, not from what the first call returned."
+}

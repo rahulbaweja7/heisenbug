@@ -1,0 +1,11 @@
+{
+  "id": "015-off-by-one-pagination",
+  "title": "Pagination Returns the Wrong Page",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["off-by-one"],
+  "filesVisible": ["src/pagination.py"],
+  "entryTest": "tests/test_pagination.py",
+  "description": "`get_page_items(items, page, page_size)` should return the items for a given **1-indexed** page number. Right now it's returning items from the wrong page. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`get_page_items(items: list, page: int, page_size: int) -> list`\n\n**Example**\n`get_page_items([\"a\", \"b\", \"c\", \"d\"], page=1, page_size=2)` -> `[\"a\", \"b\"]`, `get_page_items([\"a\", \"b\", \"c\", \"d\"], page=2, page_size=2)` -> `[\"c\", \"d\"]`."
+}
