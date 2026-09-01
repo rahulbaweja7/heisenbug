@@ -2,31 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import { API_BASE, type Challenge, type SubmitResult } from "./types";
+import Markdown from "./Markdown";
+import { markSolved } from "./progress";
 import "./ChallengePage.css";
-
-function DescriptionText({ text }: { text: string }) {
-  const paragraphs = text.split("\n\n");
-  return (
-    <>
-      {paragraphs.map((para, i) => {
-        const parts = para.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).filter(Boolean);
-        return (
-          <p key={i}>
-            {parts.map((part, j) => {
-              if (part.startsWith("**") && part.endsWith("**")) {
-                return <strong key={j}>{part.slice(2, -2)}</strong>;
-              }
-              if (part.startsWith("`") && part.endsWith("`")) {
-                return <code key={j}>{part.slice(1, -1)}</code>;
-              }
-              return <span key={j}>{part}</span>;
-            })}
-          </p>
-        );
-      })}
-    </>
-  );
-}
 
 export default function ChallengePage() {
   const { id } = useParams<{ id: string }>();
@@ -36,10 +14,12 @@ export default function ChallengePage() {
   const [result, setResult] = useState<SubmitResult | null>(null);
   const [running, setRunning] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(0);
+  const [explanation, setExplanation] = useState<string | null>(null);
 
   useEffect(() => {
     setChallenge(null);
     setResult(null);
+    setExplanation(null);
     fetch(`${API_BASE}/api/challenges/${id}`)
       .then((r) => r.json())
       .then((c: Challenge) => {
@@ -55,6 +35,14 @@ export default function ChallengePage() {
     const t = setInterval(() => setSecondsLeft((s) => Math.max(0, s - 1)), 1000);
     return () => clearInterval(t);
   }, [secondsLeft > 0]);
+
+  useEffect(() => {
+    if (!result?.passed || !challenge) return;
+    markSolved(challenge.meta.id);
+    fetch(`${API_BASE}/api/challenges/${challenge.meta.id}/explanation`)
+      .then((r) => r.json())
+      .then((data: { markdown: string }) => setExplanation(data.markdown));
+  }, [result?.passed, challenge]);
 
   async function handleSubmit() {
     if (!challenge) return;
@@ -75,6 +63,16 @@ export default function ChallengePage() {
     }
   }
 
+  function handleReset() {
+    if (!challenge) return;
+    if (!confirm("Reset all files back to the starter code? This can't be undone.")) {
+      return;
+    }
+    setFileContents(challenge.files);
+    setResult(null);
+    setExplanation(null);
+  }
+
   if (!challenge || !activeFile) {
     return <div className="cp-loading">Loading challenge...</div>;
   }
@@ -82,6 +80,7 @@ export default function ChallengePage() {
   const mm = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
   const ss = String(secondsLeft % 60).padStart(2, "0");
   const lowOnTime = secondsLeft > 0 && secondsLeft <= 60;
+  const timeUp = secondsLeft === 0;
 
   return (
     <div className="cp-app">
@@ -93,6 +92,13 @@ export default function ChallengePage() {
           {mm}:{ss}
         </div>
       </header>
+
+      {timeUp && !result?.passed && (
+        <div className="cp-timeup-banner">
+          Time's up — this is untimed practice mode now, keep going and run
+          the tests whenever you're ready.
+        </div>
+      )}
 
       <div className="cp-body">
         <aside className="cp-description">
@@ -113,8 +119,17 @@ export default function ChallengePage() {
             ))}
           </div>
           <div className="cp-description-body">
-            <DescriptionText text={challenge.meta.description} />
+            <Markdown text={challenge.meta.description} />
           </div>
+
+          {explanation && (
+            <div className="cp-explanation">
+              <div className="cp-explanation-heading">Solved! Here's why:</div>
+              <div className="cp-explanation-body">
+                <Markdown text={explanation} />
+              </div>
+            </div>
+          )}
         </aside>
 
         <main className="cp-workspace">
@@ -129,6 +144,9 @@ export default function ChallengePage() {
               </button>
             ))}
             <div className="cp-file-tabs-spacer" />
+            <button className="cp-reset-btn" onClick={handleReset}>
+              Reset
+            </button>
             <button className="cp-run-btn" onClick={handleSubmit} disabled={running}>
               {running ? "Running..." : "Run tests"}
             </button>

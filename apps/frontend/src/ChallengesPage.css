@@ -191,6 +191,20 @@
   color: #f0f0f0;
 }
 
+.ch-solved-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(111, 214, 122, 0.16);
+  color: #6fd67a;
+  font-size: 10px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
 .ch-diff-badge {
   font-size: 10px;
   font-weight: 700;

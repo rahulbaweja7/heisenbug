@@ -32,6 +32,11 @@ export async function getChallenge(id) {
   return { meta, files };
 }
 
+export async function getExplanation(id) {
+  const dir = path.join(CHALLENGES_DIR, `challenge-${id}`);
+  return readFile(path.join(dir, "explanation.md"), "utf-8");
+}
+
 export function challengeDir(id) {
   return path.join(CHALLENGES_DIR, `challenge-${id}`);
 }

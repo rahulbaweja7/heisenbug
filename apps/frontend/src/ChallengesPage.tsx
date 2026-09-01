@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { API_BASE, type Meta } from "./types";
+import { getSolvedIds } from "./progress";
 import "./ChallengesPage.css";
 
 const DIFFICULTIES = ["all", "easy", "medium", "hard"] as const;
@@ -10,12 +11,14 @@ export default function ChallengesPage() {
   const [loading, setLoading] = useState(true);
   const [difficulty, setDifficulty] = useState<string>("all");
   const [category, setCategory] = useState<string>("all");
+  const [solvedIds, setSolvedIds] = useState<string[]>([]);
 
   useEffect(() => {
     fetch(`${API_BASE}/api/challenges`)
       .then((r) => r.json())
       .then((data: Meta[]) => setChallenges(data))
       .finally(() => setLoading(false));
+    setSolvedIds(getSolvedIds());
   }, []);
 
   const categories = useMemo(() => {
@@ -82,7 +85,10 @@ export default function ChallengesPage() {
 
       <div className="ch-result-count">
         {!loading &&
-          `${filtered.length} challenge${filtered.length === 1 ? "" : "s"}`}
+          `${filtered.length} challenge${filtered.length === 1 ? "" : "s"}` +
+            (solvedIds.length > 0
+              ? ` — ${solvedIds.length}/${challenges.length} solved`
+              : "")}
       </div>
 
       {loading && (
@@ -106,7 +112,14 @@ export default function ChallengesPage() {
               className={`ch-card ch-difficulty-${c.difficulty}`}
             >
               <div className="ch-card-top">
-                <span className="ch-card-title">{c.title}</span>
+                <span className="ch-card-title">
+                  {solvedIds.includes(c.id) && (
+                    <span className="ch-solved-check" title="Solved">
+                      &#10003;
+                    </span>
+                  )}
+                  {c.title}
+                </span>
                 <span className={`ch-diff-badge ch-diff-badge-${c.difficulty}`}>
                   {c.difficulty}
                 </span>

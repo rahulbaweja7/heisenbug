@@ -186,6 +186,23 @@
   flex: 1;
 }
 
+.cp-reset-btn {
+  background: transparent;
+  color: #999;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 6px 8px 6px 0;
+}
+
+.cp-reset-btn:hover {
+  border-color: #4fc1ff;
+  color: #ddd;
+}
+
 .cp-run-btn {
   background: #4fc1ff;
   color: #0a0a0a;
@@ -205,6 +222,81 @@
 .cp-run-btn:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+.cp-timeup-banner {
+  background: rgba(224, 184, 74, 0.1);
+  color: #e0b84a;
+  border-bottom: 1px solid rgba(224, 184, 74, 0.25);
+  padding: 8px 18px;
+  font-size: 12.5px;
+  flex-shrink: 0;
+}
+
+.cp-explanation {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid #262626;
+}
+
+.cp-explanation-heading {
+  font-size: 13px;
+  font-weight: 700;
+  color: #6fd67a;
+  margin-bottom: 12px;
+}
+
+.cp-explanation-body {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #c4c4c4;
+}
+
+.cp-explanation-body h1,
+.cp-explanation-body h2 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f0f0f0;
+  margin: 18px 0 8px;
+}
+
+.cp-explanation-body h1:first-child,
+.cp-explanation-body h2:first-child {
+  margin-top: 0;
+}
+
+.cp-explanation-body p {
+  margin: 0 0 14px;
+}
+
+.cp-explanation-body strong {
+  color: #f0f0f0;
+  font-weight: 600;
+}
+
+.cp-explanation-body code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  background: #232323;
+  color: #4fc1ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.cp-explanation-body .md-code-block {
+  background: #1c1c1c;
+  border: 1px solid #262626;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 0 0 14px;
+  overflow-x: auto;
+}
+
+.cp-explanation-body .md-code-block code {
+  background: none;
+  padding: 0;
+  color: #d4d4d4;
+  white-space: pre;
 }
 
 .cp-editor-pane {
