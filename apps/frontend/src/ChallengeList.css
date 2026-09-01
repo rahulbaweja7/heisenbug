@@ -63,6 +63,68 @@
   margin-top: 14px;
 }
 
+.cta-btn {
+  display: inline-block;
+  margin-top: 28px;
+  background: #4fc1ff;
+  color: #0d1117;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  padding: 11px 24px;
+  border-radius: 999px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cta-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(79, 193, 255, 0.25);
+}
+
+.how-it-works {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto 56px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.step {
+  background: #1a1a1a;
+  border: 1px solid #262626;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(79, 193, 255, 0.12);
+  color: #4fc1ff;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.step h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f0f0f0;
+  margin: 0 0 8px;
+}
+
+.step p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #999;
+  margin: 0;
+}
+
 .toolbar {
   position: relative;
   max-width: 900px;

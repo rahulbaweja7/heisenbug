@@ -43,9 +43,36 @@ export default function ChallengeList() {
           Practice the new Amazon-style debugging OA format — get dropped
           into a broken codebase, find the bug, make the tests green.
         </p>
+        <a href="#challenges" className="cta-btn">
+          Start practicing &darr;
+        </a>
       </header>
 
-      <div className="toolbar">
+      <section className="how-it-works">
+        <div className="step">
+          <span className="step-num">1</span>
+          <h3>Pick a challenge</h3>
+          <p>Choose a language, difficulty, and bug category.</p>
+        </div>
+        <div className="step">
+          <span className="step-num">2</span>
+          <h3>Find the bug</h3>
+          <p>
+            Get dropped into a broken multi-file project with a countdown
+            timer, just like the real assessment.
+          </p>
+        </div>
+        <div className="step">
+          <span className="step-num">3</span>
+          <h3>Learn the pattern</h3>
+          <p>
+            Pass the hidden test suite, then read why the bug happens and
+            how to spot it faster next time.
+          </p>
+        </div>
+      </section>
+
+      <div className="toolbar" id="challenges">
         <div className="filter-group">
           <span className="filter-label">Difficulty</span>
           <div className="pill-row">
