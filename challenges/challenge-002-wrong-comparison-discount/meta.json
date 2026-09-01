@@ -1,0 +1,10 @@
+{
+  "id": "002-wrong-comparison-discount",
+  "title": "Discount Eligibility Off By a Sign",
+  "language": "python",
+  "difficulty": "easy",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["wrong-comparison"],
+  "filesVisible": ["src/pricing.py"],
+  "entryTest": "tests/test_pricing.py"
+}

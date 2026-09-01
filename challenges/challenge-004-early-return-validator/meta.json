@@ -1,0 +1,10 @@
+{
+  "id": "004-early-return-validator",
+  "title": "Validator Bails Out After the First Field",
+  "language": "python",
+  "difficulty": "easy",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["control-flow"],
+  "filesVisible": ["src/validator.py"],
+  "entryTest": "tests/test_validator.py"
+}

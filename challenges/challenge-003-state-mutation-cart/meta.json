@@ -1,0 +1,10 @@
+{
+  "id": "003-state-mutation-cart",
+  "title": "Checkout Snapshot Leaks Into the Live Cart",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 20,
+  "bugCategories": ["state-mutation"],
+  "filesVisible": ["src/cart.py"],
+  "entryTest": "tests/test_cart.py"
+}
