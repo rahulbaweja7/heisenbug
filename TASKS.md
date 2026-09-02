@@ -14,22 +14,21 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 
 *(move a task here when you start it — add your name)*
 
-- [ ] _example: Rahul — writing challenges 016-020 (started 2026-09-01)_
+- [ ] Rahul — write challenges 016–020 (started 2026-09-01)
+- [ ] Rahul — Judge0 cloud API spike, test against multi-file pytest format (started 2026-09-01)
 
 ---
 
 ## Backlog — pick a task
 
 ### Content
-- [ ] Write challenges 016–020 (5 more toward the 30-challenge goal — pick new bug variations, any category)
 - [ ] Write challenges 021–025
 - [ ] Write challenges 026–030
 - [ ] First multi-layer mini-app challenge — a small web service (routes/service/repository layers) with 2–3 bugs spanning layers, closer to the real Amazon repo-round format (see notes in `docs/poa.md` if you have it locally)
 
 ### Sandboxing / infra
-- [ ] Judge0 spike — try the hosted cloud API route (RapidAPI) instead of local Docker, since local kept failing on disk space
-- [ ] Or: try local Judge0 again once there's real disk headroom (15GB+ free)
 - [ ] Decide Judge0 vs. custom Docker sandbox based on spike results
+- [ ] Or: try local Judge0 again once there's real disk headroom (15GB+ free)
 
 ### Product features
 - [ ] Timed mock assessment mode — bundle 3 challenges, 90 min, single score
