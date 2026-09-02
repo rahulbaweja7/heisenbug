@@ -199,6 +199,39 @@
   font-family: "JetBrains Mono", monospace;
 }
 
+.cp-left-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid #262626;
+  margin-bottom: 20px;
+}
+
+.cp-left-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #888;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 4px;
+  margin-right: 16px;
+  cursor: pointer;
+}
+
+.cp-left-tab:hover {
+  color: #ddd;
+}
+
+.cp-left-tab.active {
+  color: #4fc1ff;
+  border-bottom-color: #4fc1ff;
+}
+
+.cp-solution-placeholder {
+  color: #666;
+  font-size: 13px;
+}
+
 .cp-description-body {
   font-size: 14px;
   line-height: 1.75;

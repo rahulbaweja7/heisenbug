@@ -1,6 +1,6 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
-import { listChallenges, getChallenge, getExplanation } from "./challenges.js";
+import { listChallenges, getChallenge, getExplanation, getSolutionWriteup } from "./challenges.js";
 import { runSubmission } from "./runner.js";
 
 const app = Fastify({ logger: true });
@@ -28,6 +28,16 @@ app.get("/api/challenges/:id/explanation", async (req, reply) => {
   } catch {
     reply.code(404);
     return { error: "explanation not found" };
+  }
+});
+
+app.get("/api/challenges/:id/solution-writeup", async (req, reply) => {
+  try {
+    const markdown = await getSolutionWriteup(req.params.id);
+    return { markdown };
+  } catch {
+    reply.code(404);
+    return { error: "solution writeup not found" };
   }
 });
 

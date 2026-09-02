@@ -37,6 +37,11 @@ export async function getExplanation(id) {
   return readFile(path.join(dir, "explanation.md"), "utf-8");
 }
 
+export async function getSolutionWriteup(id) {
+  const dir = path.join(CHALLENGES_DIR, `challenge-${id}`);
+  return readFile(path.join(dir, "solution.md"), "utf-8");
+}
+
 export function challengeDir(id) {
   return path.join(CHALLENGES_DIR, `challenge-${id}`);
 }
