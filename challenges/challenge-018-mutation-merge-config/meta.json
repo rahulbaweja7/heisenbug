@@ -1,0 +1,11 @@
+{
+  "id": "018-mutation-merge-config",
+  "title": "Merging Configs Corrupts the Base Config",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 20,
+  "bugCategories": ["state-mutation"],
+  "filesVisible": ["src/config.py"],
+  "entryTest": "tests/test_config.py",
+  "description": "`merge_config(base, override)` should return a **new** dict combining `base` with `override`'s values taking priority, without changing either input. Right now calling it silently corrupts the caller's `base` dict. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`merge_config(base: dict, override: dict) -> dict`\n\n**Example**\n`merge_config({\"timeout\": 30, \"retries\": 3}, {\"timeout\": 60})` -> `{\"timeout\": 60, \"retries\": 3}`, and the original `base` dict must still be `{\"timeout\": 30, \"retries\": 3}` afterward."
+}
