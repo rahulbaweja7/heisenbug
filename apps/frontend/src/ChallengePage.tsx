@@ -17,12 +17,20 @@ export default function ChallengePage() {
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [explanation, setExplanation] = useState<string | null>(null);
   const [loadError, setLoadError] = useState(false);
+  const [leftTab, setLeftTab] = useState<"description" | "solution">("description");
+  const [solutionWriteup, setSolutionWriteup] = useState<string | null>(null);
+  const [solutionState, setSolutionState] = useState<
+    "idle" | "loading" | "loaded" | "unavailable"
+  >("idle");
 
   useEffect(() => {
     setChallenge(null);
     setResult(null);
     setExplanation(null);
     setLoadError(false);
+    setLeftTab("description");
+    setSolutionWriteup(null);
+    setSolutionState("idle");
     fetch(`${API_BASE}/api/challenges/${id}`)
       .then((r) => {
         if (!r.ok) throw new Error("not found");
@@ -42,6 +50,21 @@ export default function ChallengePage() {
     const t = setInterval(() => setSecondsLeft((s) => Math.max(0, s - 1)), 1000);
     return () => clearInterval(t);
   }, [secondsLeft > 0]);
+
+  useEffect(() => {
+    if (leftTab !== "solution" || !challenge || solutionState !== "idle") return;
+    setSolutionState("loading");
+    fetch(`${API_BASE}/api/challenges/${challenge.meta.id}/solution-writeup`)
+      .then((r) => {
+        if (!r.ok) throw new Error("not available");
+        return r.json();
+      })
+      .then((data: { markdown: string }) => {
+        setSolutionWriteup(data.markdown);
+        setSolutionState("loaded");
+      })
+      .catch(() => setSolutionState("unavailable"));
+  }, [leftTab, challenge, solutionState]);
 
   useEffect(() => {
     if (!result?.passed || !challenge) return;
@@ -138,16 +161,53 @@ export default function ChallengePage() {
               </span>
             ))}
           </div>
-          <div className="cp-description-body">
-            <Markdown text={challenge.meta.description} />
+          <div className="cp-left-tabs">
+            <button
+              className={leftTab === "description" ? "cp-left-tab active" : "cp-left-tab"}
+              onClick={() => setLeftTab("description")}
+            >
+              Description
+            </button>
+            <button
+              className={leftTab === "solution" ? "cp-left-tab active" : "cp-left-tab"}
+              onClick={() => setLeftTab("solution")}
+            >
+              Solution
+            </button>
           </div>
 
-          {explanation && (
-            <div className="cp-explanation">
-              <div className="cp-explanation-heading">Solved! Here's why:</div>
-              <div className="cp-explanation-body">
-                <Markdown text={explanation} />
+          {leftTab === "description" && (
+            <>
+              <div className="cp-description-body">
+                <Markdown text={challenge.meta.description} />
               </div>
+
+              {explanation && (
+                <div className="cp-explanation">
+                  <div className="cp-explanation-heading">Solved! Here's why:</div>
+                  <div className="cp-explanation-body">
+                    <Markdown text={explanation} />
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {leftTab === "solution" && (
+            <div className="cp-solution-panel">
+              {solutionState === "loading" && (
+                <div className="cp-solution-placeholder">Loading solution...</div>
+              )}
+              {solutionState === "unavailable" && (
+                <div className="cp-solution-placeholder">
+                  No solution write-up yet for this challenge.
+                </div>
+              )}
+              {solutionState === "loaded" && solutionWriteup && (
+                <div className="cp-explanation-body">
+                  <Markdown text={solutionWriteup} />
+                </div>
+              )}
             </div>
           )}
         </aside>
