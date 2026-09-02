@@ -1,0 +1,11 @@
+{
+  "id": "019-truthy-string-flag",
+  "title": "Feature Flag Is On Even When Set to \"false\"",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["type-conversion"],
+  "filesVisible": ["src/flags.py"],
+  "entryTest": "tests/test_flags.py",
+  "description": "`is_feature_enabled(flag_value)` reads a feature flag that comes in as a **string** (like from an environment variable) and should return `True` only when the string is `\"true\"` (case-insensitive), `False` otherwise. Right now it treats the string `\"false\"` as enabled too. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`is_feature_enabled(flag_value: str) -> bool`\n\n**Example**\n`is_feature_enabled(\"true\")` -> `True`, `is_feature_enabled(\"false\")` -> `False`, `is_feature_enabled(\"\")` -> `False`."
+}
