@@ -1,0 +1,11 @@
+{
+  "id": "016-break-vs-continue-orders",
+  "title": "One Bad Order Stops the Whole Batch",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["control-flow"],
+  "filesVisible": ["src/orders.py"],
+  "entryTest": "tests/test_orders.py",
+  "description": "`filter_valid_orders(orders)` should return every order whose `amount` is not `None`, skipping the invalid ones but continuing to check the rest. Right now, hitting one invalid order stops the whole batch early. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`filter_valid_orders(orders: list[dict]) -> list[dict]`\n\n**Example**\n`[{\"id\": 1, \"amount\": 10}, {\"id\": 2, \"amount\": None}, {\"id\": 3, \"amount\": 5}]` -> orders 1 and 3 only."
+}
