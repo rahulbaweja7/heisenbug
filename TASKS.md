@@ -15,7 +15,7 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 *(move a task here when you start it — add your name)*
 
 - [ ] Rahul — write challenges 016–020 (started 2026-09-01)
-- [ ] Rahul — Judge0 cloud API spike, test against multi-file pytest format (started 2026-09-01)
+- [ ] Kashyap — Judge0 cloud API spike, test against multi-file pytest format (started 2026-09-01)
 
 ---
 
