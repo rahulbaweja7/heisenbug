@@ -1,0 +1,11 @@
+{
+  "id": "017-wrong-sort-direction",
+  "title": "Support Queue Shows Newest Tickets First",
+  "language": "python",
+  "difficulty": "easy",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["wrong-comparison"],
+  "filesVisible": ["src/queue.py"],
+  "entryTest": "tests/test_queue.py",
+  "description": "`sort_oldest_first(tickets)` should return support tickets sorted so the **oldest** one (lowest `created_at`) comes first — that's the one that's been waiting longest. Right now the newest ticket shows up first instead. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`sort_oldest_first(tickets: list[dict]) -> list[dict]`\n\n**Example**\nTickets with `created_at` values `[3, 1, 2]` -> returned in order `[1, 2, 3]`."
+}

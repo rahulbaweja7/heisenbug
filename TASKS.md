@@ -14,7 +14,6 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 
 *(move a task here when you start it — add your name)*
 
-- [ ] Rahul — write challenges 016–020 (started 2026-09-01)
 - [ ] Kashyap — Judge0 cloud API spike, test against multi-file pytest format (started 2026-09-01)
 
 ---
@@ -49,6 +48,7 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 
 ## Done
 
+- [x] Rahul — challenges 016–020 (break/continue, sort direction, mutation, truthy-string, off-by-one) — PR #5
 - [x] Phase 1 walking skeleton (Monaco IDE, Fastify backend, real pytest execution)
 - [x] 15 challenges written and verified, all 8 bug categories covered
 - [x] Landing page, /challenges list, LeetCode-style IDE split view

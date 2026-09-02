@@ -1,0 +1,11 @@
+{
+  "id": "020-off-by-one-truncate-ellipsis",
+  "title": "Truncated Text Overshoots the Max Length",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["off-by-one"],
+  "filesVisible": ["src/text.py"],
+  "entryTest": "tests/test_text.py",
+  "description": "`truncate_with_ellipsis(text, max_len)` should return `text` unchanged if it's already at or under `max_len`, otherwise cut it down and append `\"...\"` so the **total** length is exactly `max_len`. Right now the result comes out longer than `max_len` whenever text is truncated. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`truncate_with_ellipsis(text: str, max_len: int) -> str`\n\n**Example**\n`truncate_with_ellipsis(\"hello world\", 8)` -> `\"hello...\"` (8 characters total)."
+}
