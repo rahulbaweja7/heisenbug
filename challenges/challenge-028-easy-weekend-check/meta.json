@@ -1,0 +1,11 @@
+{
+  "id": "028-easy-weekend-check",
+  "title": "Weekend Checker Rejects Capitalized Day Names",
+  "language": "python",
+  "difficulty": "easy",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["edge-case"],
+  "filesVisible": ["src/calendar_utils.py"],
+  "entryTest": "tests/test_calendar_utils.py",
+  "description": "`is_weekend(day_name)` should return `True` for Saturday or Sunday, regardless of how the day name is capitalized. Right now it only works for all-lowercase input. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`is_weekend(day_name: str) -> bool`\n\n**Example**\n`is_weekend(\"Saturday\")` -> `True`, `is_weekend(\"Monday\")` -> `False`."
+}
