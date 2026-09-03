@@ -1,0 +1,11 @@
+{
+  "id": "024-wrong-api-remove-extension",
+  "title": "Removing the File Extension Strips Every Dot",
+  "language": "python",
+  "difficulty": "easy",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["wrong-api-usage"],
+  "filesVisible": ["src/files.py"],
+  "entryTest": "tests/test_files.py",
+  "description": "`remove_extension(filename)` should strip only the final file extension from a filename. Right now it removes every dot in the name, even from filenames with multiple dots. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`remove_extension(filename: str) -> str`\n\n**Example**\n`remove_extension(\"report.v2.final.pdf\")` -> `\"report.v2.final\"`."
+}
