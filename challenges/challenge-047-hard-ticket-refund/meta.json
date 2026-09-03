@@ -1,0 +1,17 @@
+{
+  "id": "047-hard-ticket-refund",
+  "title": "Ticket Refund Window Is Compared Against the Wrong Field",
+  "language": "python",
+  "difficulty": "hard",
+  "timeLimitMinutes": 30,
+  "bugCategories": ["wrong-variable", "control-flow"],
+  "filesVisible": [
+    "src/models.py",
+    "src/repository.py",
+    "src/refund_rules.py",
+    "src/refund_service.py",
+    "src/routes.py"
+  ],
+  "entryTest": "tests/test_refund.py",
+  "description": "An event-ticket refund system spanning 5 files across 4 layers (models, repository, refund rules, service, route handler). `is_refundable(ticket, event)` should approve a refund only if **all** of: the ticket hasn't been used, the event hasn't started yet, and the ticket was purchased within the 14-day refund window. Right now the refund window is being compared against how soon the event is instead of the fixed 14-day window, so tickets bought long ago for a far-off event get refunded while tickets bought recently for a soon event get denied. `refunds_issued_count` is also being bumped for refunds that end up denied. There are **multiple bugs across different files**. Trace the whole flow (`routes.py` -> `refund_service.py` -> `refund_rules.py`) before changing anything.\n\n**Entry point**\n`handle_refund_request(ticket_id, repository) -> dict`\n\n**Refund rule**\nApproved only if `not used` AND `days_until_event > 0` AND `purchase_days_ago <= REFUND_WINDOW_DAYS` (14). `refunded` and `refunds_issued_count` should only change for tickets that are actually refunded."
+}
