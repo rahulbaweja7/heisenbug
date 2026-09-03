@@ -30,8 +30,8 @@
   height: 460px;
   background: radial-gradient(
     ellipse at center,
-    rgba(79, 193, 255, 0.13) 0%,
-    rgba(79, 193, 255, 0) 70%
+    rgba(167, 139, 250, 0.13) 0%,
+    rgba(167, 139, 250, 0) 70%
   );
   pointer-events: none;
 }
@@ -46,7 +46,7 @@
   display: inline-block;
   font-weight: 700;
   font-size: 14px;
-  color: #4fc1ff;
+  color: #a78bfa;
   text-decoration: none;
   margin-bottom: 20px;
 }
@@ -113,13 +113,13 @@
 }
 
 .ch-pill:hover {
-  border-color: #4fc1ff;
+  border-color: #a78bfa;
   color: #e4e4e4;
 }
 
 .ch-pill.active {
-  background: #4fc1ff;
-  border-color: #4fc1ff;
+  background: #a78bfa;
+  border-color: #a78bfa;
   color: #0d1117;
   font-weight: 600;
 }
@@ -148,8 +148,8 @@
 
 .ch-clear-filters-btn {
   background: transparent;
-  color: #4fc1ff;
-  border: 1px solid rgba(79, 193, 255, 0.3);
+  color: #a78bfa;
+  border: 1px solid rgba(167, 139, 250, 0.3);
   border-radius: 999px;
   padding: 8px 14px;
   min-height: 36px;
@@ -159,14 +159,14 @@
 }
 
 .ch-clear-filters-btn:hover {
-  background: rgba(79, 193, 255, 0.1);
+  background: rgba(167, 139, 250, 0.1);
 }
 
 .ch-spinner {
   width: 14px;
   height: 14px;
   border: 2px solid #333;
-  border-top-color: #4fc1ff;
+  border-top-color: #a78bfa;
   border-radius: 50%;
   animation: ch-spin 0.7s linear infinite;
 }
@@ -253,7 +253,7 @@
 }
 
 .ch-row:hover .ch-row-link {
-  color: #4fc1ff;
+  color: #a78bfa;
 }
 
 .ch-diff-text {

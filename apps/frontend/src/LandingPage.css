@@ -26,13 +26,19 @@
   top: -220px;
   left: 50%;
   transform: translateX(-50%);
-  width: 1100px;
-  height: 560px;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(79, 193, 255, 0.18) 0%,
-    rgba(79, 193, 255, 0) 70%
-  );
+  width: 1300px;
+  height: 620px;
+  background:
+    radial-gradient(
+      ellipse 55% 60% at 38% 40%,
+      rgba(167, 139, 250, 0.22) 0%,
+      rgba(167, 139, 250, 0) 70%
+    ),
+    radial-gradient(
+      ellipse 50% 55% at 65% 55%,
+      rgba(232, 121, 249, 0.14) 0%,
+      rgba(232, 121, 249, 0) 70%
+    );
   pointer-events: none;
 }
 
@@ -56,9 +62,9 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #4fc1ff;
-  background: rgba(79, 193, 255, 0.1);
-  border: 1px solid rgba(79, 193, 255, 0.25);
+  color: #a78bfa;
+  background: rgba(167, 139, 250, 0.1);
+  border: 1px solid rgba(167, 139, 250, 0.25);
   border-radius: 999px;
   padding: 4px 12px;
   margin-bottom: 20px;
@@ -74,7 +80,7 @@
 }
 
 .lp-title-accent {
-  color: #4fc1ff;
+  color: #a78bfa;
 }
 
 .lp-tagline {
@@ -97,7 +103,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #4fc1ff;
+  background: #a78bfa;
   color: #0a0a0a;
   font-weight: 700;
   font-size: 14px;
@@ -109,7 +115,7 @@
 
 .lp-cta-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 28px rgba(79, 193, 255, 0.3);
+  box-shadow: 0 10px 28px rgba(167, 139, 250, 0.3);
 }
 
 .lp-cta-btn-ghost {
@@ -126,7 +132,7 @@
 }
 
 .lp-cta-btn-ghost:hover {
-  border-color: #4fc1ff;
+  border-color: #a78bfa;
   color: #fff;
 }
 
@@ -315,8 +321,8 @@
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  background: rgba(79, 193, 255, 0.1);
-  color: #4fc1ff;
+  background: rgba(167, 139, 250, 0.1);
+  color: #a78bfa;
   margin-bottom: 16px;
 }
 
@@ -410,7 +416,7 @@
 }
 
 .lp-footer a:hover {
-  color: #4fc1ff;
+  color: #a78bfa;
 }
 
 @media (max-width: 860px) {
