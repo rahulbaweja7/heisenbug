@@ -1,0 +1,17 @@
+{
+  "id": "040-hard-job-screening",
+  "title": "Job Applicant Screener Approves Unqualified Candidates",
+  "language": "python",
+  "difficulty": "hard",
+  "timeLimitMinutes": 30,
+  "bugCategories": ["wrong-function", "control-flow"],
+  "filesVisible": [
+    "src/models.py",
+    "src/repository.py",
+    "src/screening_rules.py",
+    "src/screening_service.py",
+    "src/routes.py"
+  ],
+  "entryTest": "tests/test_screening.py",
+  "description": "An applicant-screening system spanning 5 files across 4 layers (models, repository, screening rules, service, route handler). `is_qualified(applicant, posting)` should approve a candidate only if **all** of: they meet the minimum years of experience, they have **every** required skill for the role, and their desired salary is within budget. Right now candidates missing required skills are getting approved — and the posting's `applicant_count` is being inflated by rejected applicants too. There are **multiple bugs across different files**. Trace the whole flow (`routes.py` -> `screening_service.py` -> `screening_rules.py`) before changing anything.\n\n**Entry point**\n`handle_screening_request(applicant_id, posting_id, repository) -> dict`\n\n**Qualification rule**\nApproved only if `years_experience >= min_years_experience` AND applicant has **all** of `required_skills` AND `desired_salary <= salary_max`. `applicant_count` should only increment for applicants who end up qualified."
+}
