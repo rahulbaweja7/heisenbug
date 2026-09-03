@@ -1,0 +1,11 @@
+{
+  "id": "038-medium-overtime-pay",
+  "title": "Overtime Rate Applies to the Whole Paycheck",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 20,
+  "bugCategories": ["wrong-comparison"],
+  "filesVisible": ["src/timesheet.py", "src/payroll.py"],
+  "entryTest": "tests/test_payroll.py",
+  "description": "`calculate_weekly_pay(timesheet, hourly_rate)` in `payroll.py` should pay the normal rate for the first 40 hours and 1.5x the rate for any hours beyond 40. Right now, once an employee works any overtime at all, the 1.5x rate gets applied to *all* their hours, not just the hours over 40. Find the bug and fix it so every hidden test passes.\n\n**Files**\n`timesheet.py` — the `Timesheet` data class (`employee`, `hours_worked`)\n`payroll.py` — computes weekly pay with overtime\n\n**Function signature**\n`calculate_weekly_pay(timesheet: Timesheet, hourly_rate: float) -> float`\n\n**Example**\n`hours_worked = 45`, `hourly_rate = 20` -> `40 * 20 + 5 * 30 = 950.0`."
+}
