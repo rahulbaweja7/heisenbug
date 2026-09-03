@@ -1,0 +1,11 @@
+{
+  "id": "032-medium-login-limiter",
+  "title": "Login Attempts Leak Across Different Users",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 20,
+  "bugCategories": ["state-mutation"],
+  "filesVisible": ["src/attempts.py", "src/auth.py"],
+  "entryTest": "tests/test_auth.py",
+  "description": "`AttemptTracker` in `attempts.py` should track failed login attempts **per user**, independently. `auth.py` locks a user out after 3 failed attempts. Right now, creating a new `AttemptTracker` still shows failed attempts recorded against a completely different tracker instance. Find the bug and fix it so every hidden test passes.\n\n**Files**\n`attempts.py` — `AttemptTracker` records failures per username\n`auth.py` — `is_locked_out(tracker, username)` checks the 3-attempt limit"
+}
