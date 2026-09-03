@@ -1,0 +1,17 @@
+{
+  "id": "039-hard-library-checkout",
+  "title": "Library Checkout System Lets Ineligible Patrons Take Books",
+  "language": "python",
+  "difficulty": "hard",
+  "timeLimitMinutes": 30,
+  "bugCategories": ["operator-precedence", "control-flow"],
+  "filesVisible": [
+    "src/models.py",
+    "src/repository.py",
+    "src/eligibility_rules.py",
+    "src/checkout_service.py",
+    "src/routes.py"
+  ],
+  "entryTest": "tests/test_checkout.py",
+  "description": "A small library checkout system spanning 5 files across 4 layers (models, repository, eligibility rules, service, route handler). `is_eligible(patron, book, repository)` should approve a checkout only if **all** of: the patron has no overdue books, the patron is under the 5-book limit, and a copy of the book is available. Right now patrons who shouldn't qualify are getting approved — and even checkouts that get correctly denied still mutate inventory and patron records. There are **multiple bugs across different files**. Trace the whole flow (`routes.py` -> `checkout_service.py` -> `eligibility_rules.py` -> `repository.py`) before changing anything.\n\n**Entry point**\n`handle_checkout_request(patron_id, book_id, repository) -> dict`\n\n**Eligibility rule**\nApproved only if `not has_overdue_books` AND `books_checked_out < 5` AND `copies_available > 0`."
+}

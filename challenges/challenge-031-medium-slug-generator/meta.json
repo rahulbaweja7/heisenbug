@@ -1,0 +1,11 @@
+{
+  "id": "031-medium-slug-generator",
+  "title": "Article URLs Break on Capitalized Titles",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 20,
+  "bugCategories": ["edge-case"],
+  "filesVisible": ["src/text_utils.py", "src/article.py"],
+  "entryTest": "tests/test_article.py",
+  "description": "`build_article_url(title)` in `article.py` should build a lowercase, hyphenated URL slug from an article title using `slugify()` from `text_utils.py`. Right now titles with uppercase letters produce inconsistent, mixed-case URLs. Find the bug and fix it so every hidden test passes.\n\n**Files**\n`text_utils.py` — `slugify(text)` turns text into a URL-safe slug\n`article.py` — builds the full article URL from a title\n\n**Function signature**\n`build_article_url(title: str) -> str`\n\n**Example**\n`build_article_url(\"Hello World\")` -> `\"/articles/hello-world\"`."
+}

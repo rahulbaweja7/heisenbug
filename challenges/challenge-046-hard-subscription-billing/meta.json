@@ -1,0 +1,17 @@
+{
+  "id": "046-hard-subscription-billing",
+  "title": "Subscription Renewal Denies Customers With Valid Payment Methods",
+  "language": "python",
+  "difficulty": "hard",
+  "timeLimitMinutes": 30,
+  "bugCategories": ["extra-negation", "control-flow"],
+  "filesVisible": [
+    "src/models.py",
+    "src/repository.py",
+    "src/renewal_rules.py",
+    "src/renewal_service.py",
+    "src/routes.py"
+  ],
+  "entryTest": "tests/test_renewal.py",
+  "description": "A subscription renewal-billing system spanning 5 files across 4 layers (models, repository, renewal rules, service, route handler). `is_renewable(subscription)` should renew a subscription only if **all** of: it isn't cancelled, the payment method is valid, and it's within the 7-day grace period. Right now subscriptions with a valid payment method get denied while ones with an invalid payment method get renewed, and `renewal_count` is being bumped even for denied renewals. There are **multiple bugs across different files**. Trace the whole flow (`routes.py` -> `renewal_service.py` -> `renewal_rules.py`) before changing anything.\n\n**Entry point**\n`handle_renewal_request(sub_id, repository) -> dict`\n\n**Renewal rule**\nApproved only if `not cancelled` AND `payment_method_valid` AND `days_since_due <= 7`. `renewal_count` should only increment for subscriptions that are actually renewed."
+}

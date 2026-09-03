@@ -1,0 +1,11 @@
+{
+  "id": "037-medium-late-fee",
+  "title": "Late Fees Charge for a Day That Isn't Overdue",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 20,
+  "bugCategories": ["off-by-one"],
+  "filesVisible": ["src/loan.py", "src/fees.py"],
+  "entryTest": "tests/test_fees.py",
+  "description": "`calculate_late_fee(loan, today)` in `fees.py` should charge $0.50 per day for each day strictly after the loan's `due_day`. Right now it also charges for the due day itself. Find the bug and fix it so every hidden test passes.\n\n**Files**\n`loan.py` — the `Loan` data class (`book_title`, `due_day` as a day-number int)\n`fees.py` — computes the late fee based on how many days overdue\n\n**Function signature**\n`calculate_late_fee(loan: Loan, today: int) -> float`\n\n**Example**\n`due_day = 10`, `today = 12` -> 2 days overdue -> `1.00`. `today = 10` (due today, not late) -> `0.00`."
+}

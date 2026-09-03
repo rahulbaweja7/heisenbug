@@ -1,0 +1,17 @@
+{
+  "id": "041-hard-loan-approval",
+  "title": "Loan Approval System Has an Inverted Debt-to-Income Ratio",
+  "language": "python",
+  "difficulty": "hard",
+  "timeLimitMinutes": 30,
+  "bugCategories": ["swapped-operands", "control-flow"],
+  "filesVisible": [
+    "src/models.py",
+    "src/repository.py",
+    "src/loan_rules.py",
+    "src/loan_service.py",
+    "src/routes.py"
+  ],
+  "entryTest": "tests/test_loan.py",
+  "description": "A loan-approval system spanning 5 files across 4 layers (models, repository, loan rules, service, route handler). `is_approved(applicant)` should approve a loan only if **all** of: credit score is at least 650, debt-to-income ratio is 0.4 or below, and employment is verified. Right now well-qualified applicants are getting denied, and `active_loans_count` is being bumped for applicants whose loans were denied. There are **multiple bugs across different files**. Trace the whole flow (`routes.py` -> `loan_service.py` -> `loan_rules.py`) before changing anything.\n\n**Entry point**\n`handle_loan_request(applicant_id, application_id, requested_amount, repository) -> dict`\n\n**Approval rule**\nApproved only if `credit_score >= 650` AND `existing_debt / annual_income <= 0.4` AND `employment_verified`. `active_loans_count` should only increment for applicants whose loan is actually approved."
+}

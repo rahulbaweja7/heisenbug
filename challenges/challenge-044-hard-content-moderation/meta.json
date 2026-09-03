@@ -1,0 +1,17 @@
+{
+  "id": "044-hard-content-moderation",
+  "title": "Content Moderation System Requires All Red Flags Instead of Any",
+  "language": "python",
+  "difficulty": "hard",
+  "timeLimitMinutes": 30,
+  "bugCategories": ["wrong-boolean-operator", "control-flow"],
+  "filesVisible": [
+    "src/models.py",
+    "src/repository.py",
+    "src/moderation_rules.py",
+    "src/moderation_service.py",
+    "src/routes.py"
+  ],
+  "entryTest": "tests/test_moderation.py",
+  "description": "A content-moderation auto-flagging system spanning 5 files across 4 layers (models, repository, moderation rules, service, route handler). `should_flag(post)` should flag a post if **any** of: it has too many reports, it contains a blocked word, or the author has low trust. Right now a post only gets flagged if **all three** are true at once, so posts that should clearly be flagged (e.g. 5 reports alone) are slipping through. `ModerationStats.total_flags` is also being bumped for every post reviewed, flagged or not. There are **multiple bugs across different files**. Trace the whole flow (`routes.py` -> `moderation_service.py` -> `moderation_rules.py`) before changing anything.\n\n**Entry point**\n`handle_moderation_request(post_id, repository) -> dict`\n\n**Flagging rule**\nFlag if `report_count >= 3` OR post text contains a blocked word OR `author_trust_score < 20`. `total_flags` should only increment for posts that end up flagged."
+}
