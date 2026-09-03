@@ -223,15 +223,17 @@ export default function ChallengePage() {
 
         <main className="cp-workspace">
           <div className="cp-file-tabs">
-            {Object.keys(challenge.files).map((path) => (
-              <button
-                key={path}
-                className={path === activeFile ? "cp-tab active" : "cp-tab"}
-                onClick={() => setActiveFile(path)}
-              >
-                {path}
-              </button>
-            ))}
+            <div className="cp-file-tabs-scroll">
+              {Object.keys(challenge.files).map((path) => (
+                <button
+                  key={path}
+                  className={path === activeFile ? "cp-tab active" : "cp-tab"}
+                  onClick={() => setActiveFile(path)}
+                >
+                  {path}
+                </button>
+              ))}
+            </div>
             <div className="cp-file-tabs-spacer" />
             <button className="cp-reset-btn" onClick={handleReset}>
               Reset
