@@ -1,0 +1,11 @@
+{
+  "id": "027-easy-tip-calculator",
+  "title": "Tip Calculator Adds 100x Too Much",
+  "language": "python",
+  "difficulty": "easy",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["type-conversion"],
+  "filesVisible": ["src/tip.py"],
+  "entryTest": "tests/test_tip.py",
+  "description": "`calculate_total_with_tip(bill, tip_percent)` should return the bill plus a tip of `tip_percent` percent. Right now it treats the percent as a plain fraction instead of dividing by 100 first. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`calculate_total_with_tip(bill: float, tip_percent: float) -> float`\n\n**Example**\n`calculate_total_with_tip(100, 20)` -> `120.0` (20% of 100 is 20)."
+}
