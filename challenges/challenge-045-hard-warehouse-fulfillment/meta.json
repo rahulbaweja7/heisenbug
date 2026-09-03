@@ -1,0 +1,17 @@
+{
+  "id": "045-hard-warehouse-fulfillment",
+  "title": "Warehouse Fulfillment System Ships Fraud-Flagged Orders",
+  "language": "python",
+  "difficulty": "hard",
+  "timeLimitMinutes": 30,
+  "bugCategories": ["missing-negation", "control-flow"],
+  "filesVisible": [
+    "src/models.py",
+    "src/repository.py",
+    "src/fulfillment_rules.py",
+    "src/fulfillment_service.py",
+    "src/routes.py"
+  ],
+  "entryTest": "tests/test_fulfillment.py",
+  "description": "A warehouse order-fulfillment system spanning 5 files across 4 layers (models, repository, fulfillment rules, service, route handler). `can_fulfill(order, warehouse)` should approve an order only if **all** of: enough stock is available, the shipping zone is supported by the warehouse, and the order isn't fraud-flagged. Right now fraud-flagged orders are getting fulfilled while clean orders get denied, and stock is being decremented even for orders that end up denied. There are **multiple bugs across different files**. Trace the whole flow (`routes.py` -> `fulfillment_service.py` -> `fulfillment_rules.py`) before changing anything.\n\n**Entry point**\n`handle_fulfillment_request(order_id, warehouse_id, repository) -> dict`\n\n**Fulfillment rule**\nApproved only if `stock_available >= quantity` AND `shipping_zone` is in `supported_zones` AND the order is **not** fraud-flagged. Stock and `orders_fulfilled_count` should only change for orders that are actually fulfilled."
+}
