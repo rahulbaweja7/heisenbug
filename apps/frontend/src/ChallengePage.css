@@ -214,7 +214,8 @@
   color: #888;
   font-size: 13px;
   font-weight: 600;
-  padding: 8px 4px;
+  padding: 12px 4px;
+  min-height: 40px;
   margin-right: 16px;
   cursor: pointer;
 }
