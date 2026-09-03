@@ -21,9 +21,9 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 ## Backlog — pick a task
 
 ### Content
-- [ ] Write challenges 021–025
+- [ ] Write challenges 022–025
 - [ ] Write challenges 026–030
-- [ ] First multi-layer mini-app challenge — a small web service (routes/service/repository layers) with 2–3 bugs spanning layers, closer to the real Amazon repo-round format (see notes in `docs/poa.md` if you have it locally)
+- [ ] More multi-layer mini-app challenges (challenge 021 is the first one — see Done below)
 
 ### Sandboxing / infra
 - [ ] Decide Judge0 vs. custom Docker sandbox based on spike results
@@ -48,6 +48,8 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 
 ## Done
 
+- [x] Rahul — challenge 021, first multi-layer mini-app challenge (refund review system, 5 files across 4 layers, 3 bugs) — closer to the real Amazon repo-round format, based on a real OA example
+- [x] Rahul — Solutions tab (LeetCode-style editorial write-ups for all 20 challenges) — PR #6
 - [x] Rahul — challenges 016–020 (break/continue, sort direction, mutation, truthy-string, off-by-one) — PR #5
 - [x] Phase 1 walking skeleton (Monaco IDE, Fastify backend, real pytest execution)
 - [x] 15 challenges written and verified, all 8 bug categories covered
