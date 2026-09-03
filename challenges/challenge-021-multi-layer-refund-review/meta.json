@@ -1,0 +1,17 @@
+{
+  "id": "021-multi-layer-refund-review",
+  "title": "Refund Review System Approves Ineligible Orders",
+  "language": "python",
+  "difficulty": "hard",
+  "timeLimitMinutes": 30,
+  "bugCategories": ["wrong-comparison", "control-flow"],
+  "filesVisible": [
+    "src/models.py",
+    "src/repository.py",
+    "src/eligibility_rules.py",
+    "src/refund_service.py",
+    "src/routes.py"
+  ],
+  "entryTest": "tests/test_refund_review.py",
+  "description": "This one spans a small **real codebase**, not a single function — 5 files across 4 layers (models, repository, business rules, service, route handler), same shape as a real refund-review system. `is_eligible(order)` should approve a refund only if **all** of: the order is within a 30-day return window, the item's condition is acceptable, and the customer hasn't exceeded their prior-refund limit. Right now orders that shouldn't qualify are getting approved — and even orders that get correctly denied are being marked as refunded in the repository. There are **multiple bugs across different files**. Read through the whole flow (`routes.py` → `refund_service.py` → `eligibility_rules.py` → `repository.py`) before changing anything.\n\n**Entry point**\n`handle_refund_request(order_id, repository) -> dict`\n\n**Eligibility rule**\nApproved only if `days_since_purchase <= 30` AND `item_condition` is `\"unopened\"` or `\"defective\"` AND `customer_prior_refunds < 3`."
+}
