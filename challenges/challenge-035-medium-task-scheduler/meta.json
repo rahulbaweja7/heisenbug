@@ -1,0 +1,11 @@
+{
+  "id": "035-medium-task-scheduler",
+  "title": "Scheduler Runs Low-Priority Tasks First",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 20,
+  "bugCategories": ["wrong-comparison"],
+  "filesVisible": ["src/task.py", "src/scheduler.py"],
+  "entryTest": "tests/test_scheduler.py",
+  "description": "`order_tasks(tasks)` in `scheduler.py` should sort tasks so the **highest** priority number runs first. Right now it sorts lowest-priority-first instead. Find the bug and fix it so every hidden test passes.\n\n**Files**\n`task.py` — the `Task` data class (`name`, `priority` where higher = more urgent)\n`scheduler.py` — orders tasks for execution\n\n**Function signature**\n`order_tasks(tasks: list[Task]) -> list[Task]`"
+}
