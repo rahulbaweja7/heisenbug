@@ -1,0 +1,11 @@
+{
+  "id": "030-medium-restock-notifier",
+  "title": "Restock Alerts Fire One Unit Too Late",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 20,
+  "bugCategories": ["wrong-comparison"],
+  "filesVisible": ["src/inventory.py", "src/notifier.py"],
+  "entryTest": "tests/test_notifier.py",
+  "description": "`items_needing_restock(items)` in `notifier.py` should return every item whose `quantity` is at or below its own `reorder_threshold` (defined per item in `inventory.py`). Right now an item exactly at its threshold is skipped. Find the bug and fix it so every hidden test passes.\n\n**Files**\n`inventory.py` — the `Item` data class\n`notifier.py` — decides which items need restocking\n\n**Function signature**\n`items_needing_restock(items: list[Item]) -> list[Item]`"
+}
