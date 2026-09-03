@@ -95,7 +95,7 @@
 .ch-pill-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
 .ch-pill {
@@ -103,8 +103,9 @@
   color: #bbb;
   border: 1px solid #2f2f2f;
   border-radius: 999px;
-  padding: 5px 13px;
-  font-size: 12px;
+  padding: 10px 16px;
+  min-height: 40px;
+  font-size: 12.5px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -150,8 +151,9 @@
   color: #4fc1ff;
   border: 1px solid rgba(79, 193, 255, 0.3);
   border-radius: 999px;
-  padding: 4px 12px;
-  font-size: 12px;
+  padding: 8px 14px;
+  min-height: 36px;
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
 }
