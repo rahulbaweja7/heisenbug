@@ -1,0 +1,11 @@
+{
+  "id": "022-edge-case-split-name",
+  "title": "Full Name Splitter Crashes on Single Names",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["edge-case"],
+  "filesVisible": ["src/names.py"],
+  "entryTest": "tests/test_names.py",
+  "description": "`split_full_name(full_name)` should return `(first_name, last_name)`. For a single-word name, `last_name` should be an empty string. For a name with more than two words (middle names), everything after the first word should be joined into `last_name`. Right now it crashes on single-word names and drops extra words from multi-word names. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`split_full_name(full_name: str) -> tuple[str, str]`\n\n**Example**\n`split_full_name(\"Ada Lovelace\")` -> `(\"Ada\", \"Lovelace\")`, `split_full_name(\"Madonna\")` -> `(\"Madonna\", \"\")`, `split_full_name(\"Mary Jane Watson\")` -> `(\"Mary\", \"Jane Watson\")`."
+}

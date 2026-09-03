@@ -1,0 +1,11 @@
+{
+  "id": "025-state-mutation-cart-class",
+  "title": "New Shopping Carts Start With Someone Else's Items",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["state-mutation"],
+  "filesVisible": ["src/cart.py"],
+  "entryTest": "tests/test_cart.py",
+  "description": "`ShoppingCart` should start empty every time you create a new one, unless you explicitly pass in starting items. Right now, creating a second `ShoppingCart` with no arguments shows items left over from a completely different cart. Find the bug and fix it so every hidden test passes.\n\n**Class**\n`ShoppingCart(items=None)` with `.add(item)` and `.items`\n\n**Example**\nCreate a `ShoppingCart`, add `\"apple\"`. Create a second, unrelated `ShoppingCart()` with no arguments — its `.items` should be `[]`, not `[\"apple\"]`."
+}

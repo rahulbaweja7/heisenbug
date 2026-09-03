@@ -21,8 +21,7 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 ## Backlog — pick a task
 
 ### Content
-- [ ] Write challenges 022–025
-- [ ] Write challenges 026–030
+- [ ] Write challenges 027–030 (4 more to hit the 30-challenge goal)
 - [ ] More multi-layer mini-app challenges (challenge 021 is the first one — see Done below)
 
 ### Sandboxing / infra
@@ -48,6 +47,9 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 
 ## Done
 
+- [x] Rahul — mobile/accessibility audit (touch targets, overflow-wrap safety) — PR #9
+- [x] Rahul — challenges 022–026 (edge-case, off-by-one loop-step, wrong-API, mutable-default class, control-flow) — 26 challenges total now
+- [x] Rahul — fixed a real horizontal-scroll bug in the IDE (file tabs overflow) — PR #8
 - [x] Rahul — challenge 021, first multi-layer mini-app challenge (refund review system, 5 files across 4 layers, 3 bugs) — closer to the real Amazon repo-round format, based on a real OA example
 - [x] Rahul — Solutions tab (LeetCode-style editorial write-ups for all 20 challenges) — PR #6
 - [x] Rahul — challenges 016–020 (break/continue, sort direction, mutation, truthy-string, off-by-one) — PR #5
