@@ -1,0 +1,11 @@
+{
+  "id": "029-medium-password-strength",
+  "title": "Weak Passwords Pass the Strength Check",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 20,
+  "bugCategories": ["wrong-api-usage"],
+  "filesVisible": ["src/rules.py", "src/validator.py"],
+  "entryTest": "tests/test_validator.py",
+  "description": "`is_strong_password(password)` in `validator.py` should return `True` only if the password passes **every** rule in `rules.py` (at least 8 characters, has a digit, has an uppercase letter). Right now passwords that fail some rules are still accepted. Find the bug and fix it so every hidden test passes.\n\n**Files**\n`rules.py` — individual rule functions (each returns `True`/`False`)\n`validator.py` — combines the rules into one pass/fail decision\n\n**Function signature**\n`is_strong_password(password: str) -> bool`"
+}
