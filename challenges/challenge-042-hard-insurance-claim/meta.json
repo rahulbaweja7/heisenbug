@@ -1,0 +1,17 @@
+{
+  "id": "042-hard-insurance-claim",
+  "title": "Insurance Claim System Rejects Claims at the Coverage Limit",
+  "language": "python",
+  "difficulty": "hard",
+  "timeLimitMinutes": 30,
+  "bugCategories": ["off-by-one", "control-flow"],
+  "filesVisible": [
+    "src/models.py",
+    "src/repository.py",
+    "src/claim_rules.py",
+    "src/claim_service.py",
+    "src/routes.py"
+  ],
+  "entryTest": "tests/test_claim.py",
+  "description": "An insurance claim system spanning 5 files across 4 layers (models, repository, claim rules, service, route handler). `is_claim_valid(policy, claim)` should approve a claim if it's filed within the coverage window **and** the claim amount is within the policy's coverage limit (a claim exactly at the limit should still be approved). Right now claims at the exact coverage limit are getting rejected, and the policy's `claims_filed_count` is being bumped even for claims that end up denied. There are **multiple bugs across different files**. Trace the whole flow (`routes.py` -> `claim_service.py` -> `claim_rules.py`) before changing anything.\n\n**Entry point**\n`handle_claim_request(policy_id, claim, repository) -> dict`\n\n**Validity rule**\nApproved only if `days_since_incident <= coverage_window_days` AND `amount <= coverage_limit`. `claims_filed_count` should only increment for claims that are actually approved."
+}
