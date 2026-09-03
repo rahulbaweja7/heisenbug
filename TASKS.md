@@ -21,8 +21,7 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 ## Backlog — pick a task
 
 ### Content
-- [ ] Write challenges 027–030 (4 more to hit the 30-challenge goal)
-- [ ] More multi-layer mini-app challenges (challenge 021 is the first one — see Done below)
+- [ ] More multi-layer mini-app challenges beyond the current 10 hard ones
 
 ### Sandboxing / infra
 - [ ] Decide Judge0 vs. custom Docker sandbox based on spike results
@@ -47,6 +46,7 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 
 ## Done
 
+- [x] Rahul — tier restructure to 10 easy (1 file) / 10 medium (2-3 files) / 10 hard (4-5 files): added 2 new easy, 10 new 2-file medium, 9 new 5-file hard challenges (039–047) alongside challenge-021, each verified broken->red / solution->green — 47 challenges total in the repo now (old single-file mediums kept as bonus content)
 - [x] Rahul — mobile/accessibility audit (touch targets, overflow-wrap safety) — PR #9
 - [x] Rahul — challenges 022–026 (edge-case, off-by-one loop-step, wrong-API, mutable-default class, control-flow) — 26 challenges total now
 - [x] Rahul — fixed a real horizontal-scroll bug in the IDE (file tabs overflow) — PR #8
