@@ -1,0 +1,11 @@
+{
+  "id": "026-control-flow-discount-rules",
+  "title": "Discount Engine Ignores Every Rule But the First",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["control-flow"],
+  "filesVisible": ["src/discounts.py"],
+  "entryTest": "tests/test_discounts.py",
+  "description": "`apply_first_matching_discount(price, rules)` takes a list of `(condition, discount)` pairs and should apply the discount from the **first** rule whose condition matches the price, checking rules in order. If no rule matches, return the original price. Right now it gives up after checking only the very first rule, even if that rule didn't match. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`apply_first_matching_discount(price: float, rules: list[tuple]) -> float`\n\nEach rule is `(condition_fn, discount_fraction)` where `condition_fn(price)` returns `True`/`False`."
+}
