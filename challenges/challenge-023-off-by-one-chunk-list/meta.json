@@ -1,0 +1,11 @@
+{
+  "id": "023-off-by-one-chunk-list",
+  "title": "Batch Chunker Produces Overlapping Batches",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 15,
+  "bugCategories": ["off-by-one"],
+  "filesVisible": ["src/batching.py"],
+  "entryTest": "tests/test_batching.py",
+  "description": "`chunk_list(items, size)` should split `items` into consecutive, non-overlapping batches of at most `size` elements each. Right now consecutive batches share items. Find the bug and fix it so every hidden test passes.\n\n**Function signature**\n`chunk_list(items: list, size: int) -> list[list]`\n\n**Example**\n`chunk_list([1, 2, 3, 4, 5], 2)` -> `[[1, 2], [3, 4], [5]]`."
+}
