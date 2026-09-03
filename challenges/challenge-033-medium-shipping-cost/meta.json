@@ -1,0 +1,11 @@
+{
+  "id": "033-medium-shipping-cost",
+  "title": "Heavy Packages Get the Wrong Shipping Rate",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 20,
+  "bugCategories": ["off-by-one"],
+  "filesVisible": ["src/rates.py", "src/shipping.py"],
+  "entryTest": "tests/test_shipping.py",
+  "description": "`calculate_shipping_cost(weight_kg)` in `shipping.py` should look up the correct rate tier from `rates.py` based on package weight (tiers are inclusive of their upper bound) and multiply by weight. Right now a package weighing exactly at a tier boundary gets bumped into the next, more expensive tier. Find the bug and fix it so every hidden test passes.\n\n**Files**\n`rates.py` — `RATE_TIERS`, a list of `(max_weight, rate_per_kg)` tuples, checked in order\n`shipping.py` — looks up the tier and computes the total cost\n\n**Function signature**\n`calculate_shipping_cost(weight_kg: float) -> float`"
+}
