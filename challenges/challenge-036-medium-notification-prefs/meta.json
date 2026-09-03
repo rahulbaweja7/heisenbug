@@ -1,0 +1,11 @@
+{
+  "id": "036-medium-notification-prefs",
+  "title": "Notifications Send Even When the User Opted Out",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 20,
+  "bugCategories": ["control-flow"],
+  "filesVisible": ["src/preferences.py", "src/notifier.py"],
+  "entryTest": "tests/test_notifier.py",
+  "description": "`should_send(prefs, channel)` in `notifier.py` should check the user's per-channel opt-in flags from `preferences.py` and return `True` only if that channel is enabled. Right now it sends notifications on channels the user explicitly disabled. Find the bug and fix it so every hidden test passes.\n\n**Files**\n`preferences.py` — `NotificationPreferences` stores per-channel `True`/`False` flags\n`notifier.py` — decides whether to send on a given channel\n\n**Function signature**\n`should_send(prefs: NotificationPreferences, channel: str) -> bool`"
+}
