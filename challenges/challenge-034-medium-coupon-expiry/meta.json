@@ -1,0 +1,11 @@
+{
+  "id": "034-medium-coupon-expiry",
+  "title": "Checkout Accepts Coupons That Already Expired",
+  "language": "python",
+  "difficulty": "medium",
+  "timeLimitMinutes": 20,
+  "bugCategories": ["wrong-comparison"],
+  "filesVisible": ["src/coupons.py", "src/checkout.py"],
+  "entryTest": "tests/test_checkout.py",
+  "description": "`is_coupon_valid(coupon, today)` in `checkout.py` should return `True` only if `today` is on or before the coupon's `expires_on` date. Right now the comparison is backwards: it rejects perfectly valid, unexpired coupons and accepts ones that already expired. Find the bug and fix it so every hidden test passes.\n\n**Files**\n`coupons.py` — the `Coupon` data class (`code`, `expires_on` as a day-number int)\n`checkout.py` — validates whether a coupon can still be applied\n\n**Function signature**\n`is_coupon_valid(coupon: Coupon, today: int) -> bool`"
+}
