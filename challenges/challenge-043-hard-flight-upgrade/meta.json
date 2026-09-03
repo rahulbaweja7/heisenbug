@@ -1,0 +1,17 @@
+{
+  "id": "043-hard-flight-upgrade",
+  "title": "Seat Upgrade System Approves Passengers With No-Shows",
+  "language": "python",
+  "difficulty": "hard",
+  "timeLimitMinutes": 30,
+  "bugCategories": ["inverted-condition", "control-flow"],
+  "filesVisible": [
+    "src/models.py",
+    "src/repository.py",
+    "src/upgrade_rules.py",
+    "src/upgrade_service.py",
+    "src/routes.py"
+  ],
+  "entryTest": "tests/test_upgrade.py",
+  "description": "A flight seat-upgrade system spanning 5 files across 4 layers (models, repository, upgrade rules, service, route handler). `is_upgrade_eligible(passenger, flight)` should approve an upgrade only if **all** of: the passenger is gold or platinum tier, the passenger has zero prior no-shows, and an upgrade seat is available. Right now passengers with no-show history are getting approved while clean-record passengers get denied, and seat inventory is decremented even for denied requests. There are **multiple bugs across different files**. Trace the whole flow (`routes.py` -> `upgrade_service.py` -> `upgrade_rules.py`) before changing anything.\n\n**Entry point**\n`handle_upgrade_request(passenger_id, flight_id, repository) -> dict`\n\n**Eligibility rule**\nApproved only if `loyalty_tier` is gold or platinum AND `no_show_count == 0` AND `upgrade_seats_available > 0`. Seat inventory and `upgrades_used` should only change for approved requests."
+}
