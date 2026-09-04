@@ -15,6 +15,8 @@ export default function ChallengePage() {
   const [result, setResult] = useState<SubmitResult | null>(null);
   const [running, setRunning] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(0);
+  const [editingTimer, setEditingTimer] = useState(false);
+  const [timerInput, setTimerInput] = useState("");
   const [explanation, setExplanation] = useState<string | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [leftTab, setLeftTab] = useState<"description" | "solution">("description");
@@ -31,6 +33,7 @@ export default function ChallengePage() {
     setLeftTab("description");
     setSolutionWriteup(null);
     setSolutionState("idle");
+    setEditingTimer(false);
     fetch(`${API_BASE}/api/challenges/${id}`)
       .then((r) => {
         if (!r.ok) throw new Error("not found");
@@ -93,6 +96,19 @@ export default function ChallengePage() {
     }
   }
 
+  function openTimerEdit() {
+    setTimerInput(String(Math.max(1, Math.ceil(secondsLeft / 60))));
+    setEditingTimer(true);
+  }
+
+  function applyTimerEdit() {
+    const minutes = Number(timerInput);
+    if (Number.isFinite(minutes) && minutes > 0) {
+      setSecondsLeft(Math.round(Math.min(180, minutes) * 60));
+    }
+    setEditingTimer(false);
+  }
+
   function handleReset() {
     if (!challenge) return;
     if (!confirm("Reset all files back to the starter code? This can't be undone.")) {
@@ -131,9 +147,31 @@ export default function ChallengePage() {
         <Link to="/" className="cp-brand">
           Heisenbug
         </Link>
-        <div className={`cp-timer ${lowOnTime ? "cp-timer-low" : ""}`}>
-          {mm}:{ss}
-        </div>
+        {editingTimer ? (
+          <input
+            type="number"
+            min={1}
+            max={180}
+            autoFocus
+            className="cp-timer-input"
+            value={timerInput}
+            onChange={(e) => setTimerInput(e.target.value)}
+            onBlur={applyTimerEdit}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") applyTimerEdit();
+              if (e.key === "Escape") setEditingTimer(false);
+            }}
+          />
+        ) : (
+          <button
+            type="button"
+            className={`cp-timer ${lowOnTime ? "cp-timer-low" : ""}`}
+            onClick={openTimerEdit}
+            title="Click to set a custom time limit"
+          >
+            {mm}:{ss}
+          </button>
+        )}
       </header>
 
       {timeUp && !result?.passed && (
