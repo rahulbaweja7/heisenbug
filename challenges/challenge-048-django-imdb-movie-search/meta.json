@@ -34,8 +34,14 @@
     "src/movies/repository.py",
     "src/movies/seed.py",
     "src/movies/urls.py",
-    "src/movies/views.py"
+    "src/movies/views.py",
+    "serve.py",
+    "README.md"
   ],
   "entryTest": "tests/test_cinematch.py",
-  "description": "Repair CineMatch, an original, dependency-free Django-inspired movie discovery service. Search should ignore surrounding whitespace and match partial text case-insensitively across titles, directors, or cast members. An optional case-insensitive genre filter narrows matches. Return unique movies in catalog order, with two per page (the last page may contain fewer); invalid or out-of-range pages fall back to page one. Blank searches return no movies. Movie details return 404 for unknown IDs. Watchlists return 401 for unauthenticated users, 404 for unknown movies, 201 for new additions, and 200 for repeated additions without duplicating IDs. Each user has an isolated watchlist. Preserve the public interfaces and repair the behavior across the application."
+  "description": "Repair CineMatch, an original, dependency-free Django-inspired movie discovery service. Search should ignore surrounding whitespace and match partial text case-insensitively across titles, directors, or cast members. An optional case-insensitive genre filter narrows matches. Return unique movies in catalog order, with two per page (the last page may contain fewer); invalid or out-of-range pages fall back to page one. Blank searches return no movies. Movie details return 404 for unknown IDs. Watchlists return 401 for unauthenticated users, 404 for unknown movies, 201 for new additions, and 200 for repeated additions without duplicating IDs. Each user has an isolated watchlist. Preserve the public interfaces and repair the behavior across the application.",
+  "workspace": {
+    "previewPort": 8000,
+    "startCommand": "exec /opt/venv/bin/python serve.py"
+  }
 }
