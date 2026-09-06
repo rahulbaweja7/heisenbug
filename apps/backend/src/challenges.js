@@ -21,7 +21,7 @@ export async function listChallenges() {
 }
 
 export async function getChallenge(id) {
-  const dir = path.join(CHALLENGES_DIR, `challenge-${id}`);
+  const dir = challengeDir(id);
   const meta = JSON.parse(await readFile(path.join(dir, "meta.json"), "utf-8"));
 
   const files = {};
@@ -33,16 +33,17 @@ export async function getChallenge(id) {
 }
 
 export async function getExplanation(id) {
-  const dir = path.join(CHALLENGES_DIR, `challenge-${id}`);
+  const dir = challengeDir(id);
   return readFile(path.join(dir, "explanation.md"), "utf-8");
 }
 
 export async function getSolutionWriteup(id) {
-  const dir = path.join(CHALLENGES_DIR, `challenge-${id}`);
+  const dir = challengeDir(id);
   return readFile(path.join(dir, "solution.md"), "utf-8");
 }
 
 export function challengeDir(id) {
+  if (typeof id !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9-]{0,120}$/.test(id)) throw new Error('Invalid challenge ID');
   return path.join(CHALLENGES_DIR, `challenge-${id}`);
 }
 
