@@ -26,7 +26,8 @@ export function validateFiles(files) {
   if (entries.length > 200) throw fail(413, 'Maximum 200 files');
   let bytes = 0;
   for (const [name, content] of entries) {
-    if (name.length > 240 || !/^[a-zA-Z0-9_./-]+$/.test(name) || name.split('/').some(p => !p || p === '.' || p === '..') || /^(tests|\.git)(\/|$)/.test(name)) throw fail(400, 'Invalid workspace path');
+    if (name.length > 240 || !/^[a-zA-Z0-9_./-]+$/.test(name) || name.split('/').some(p => !p || p.startsWith('.') || ['__proto__', 'constructor', 'prototype', '__pycache__', 'node_modules'].includes(p)) || /^tests(\/|$)/.test(name)) throw fail(400, 'Invalid workspace path');
+    if (name.split('/').slice(0, -1).some((_, index) => Object.hasOwn(files, name.split('/').slice(0, index + 1).join('/')))) throw fail(400, 'A file cannot also be a directory');
     if (typeof content !== 'string' || content.includes('\0') || Buffer.byteLength(content) > 100000) throw fail(413, 'Files must be text, at most 100 KB each');
     bytes += Buffer.byteLength(content);
   }

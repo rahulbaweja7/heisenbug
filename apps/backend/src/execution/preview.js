@@ -1,10 +1,10 @@
 import { createServer } from 'node:http';
 import httpProxy from 'http-proxy';
 import { hash, token } from './store.js';
-export function previewServer(service, db, cfg) {
+export function previewServer(service, db, cfg, createProxy = options => httpProxy.createProxyServer(options)) {
   const base = new URL(cfg.previewOrigin);
   if (base.origin === new URL(cfg.appOrigin).origin || base.origin === new URL(cfg.apiOrigin).origin) throw new Error('Preview must use a separate origin');
-  const proxy = httpProxy.createProxyServer({ changeOrigin: true, ws: true, proxyTimeout: 15000, timeout: 15000, secure: true });
+  const proxy = createProxy({ changeOrigin: true, ws: true, proxyTimeout: 15000, timeout: 15000, secure: true });
   const cookie = req => /(?:^|;\s*)hb_preview=([^;]+)/.exec(req.headers.cookie || '')?.[1];
   function sessionFor(req, credential) {
     if (!credential) throw new Error('Preview access expired');

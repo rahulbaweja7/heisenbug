@@ -16,6 +16,19 @@ export async function buildApp(options = {}) {
   await app.register(cors, { origin: cfg.appOrigin, credentials: true });
   await app.register(cookie);
   await app.register(websocket, { options: { maxPayload: 20000 } });
+  const requests = new Map();
+  app.addHook('onRequest', async (req, reply) => {
+    const now = Date.now();
+    const bucket = Math.floor(now / 60000);
+    for (const [key, value] of requests) if (value.bucket !== bucket) requests.delete(key);
+    const key = req.ip;
+    if (!requests.has(key) && requests.size >= 10000) return reply.code(429).send({ error: 'Server is busy; retry shortly' });
+    const entry = requests.get(key) || { bucket, count: 0, oauth: 0 };
+    entry.count++;
+    if (req.url.startsWith('/api/auth/github')) entry.oauth++;
+    requests.set(key, entry);
+    if (entry.count > 300 || entry.oauth > 10) return reply.header('Retry-After', '60').code(429).send({ error: 'Too many requests; retry in one minute' });
+  });
   app.setErrorHandler((err, req, reply) => {
     const status = err.statusCode || 502;
     if (status >= 500) req.log.error({ err }, 'Request failed');
@@ -29,8 +42,10 @@ export async function buildApp(options = {}) {
       catch { return reply.code(404).send({ error: 'Challenge content not found' }); }
     });
   }
-  const auth = registerAuth(app, db, cfg);
   const service = new ExecutionService(db, cfg, options.provider || new E2BProvider(cfg), app.log);
+  const auth = registerAuth(app, db, cfg, async userId => {
+    for (const session of service.sessions.values()) if (session.userId === userId) await service.stop(session);
+  });
   registerExecution(app, service, auth, cfg, db);
   app.decorate('execution', service); app.decorate('store', db); app.decorate('executionConfig', cfg);
   app.addHook('onClose', async () => {

@@ -12,8 +12,9 @@ import { api } from './workspace/api';
 export default function ChallengePage() {
   const { id } = useParams<{ id: string }>();
   const [challenge, setChallenge] = useState<Challenge | null>(null);
-  const [activeFile, setActiveFile] = useState<string | null>(null);
+  const [selectedPath, setActiveFile] = useState<string | null>(null);
   const [fileContents, setFileContents] = useState<Record<string, string>>({});
+  const activeFile = selectedPath && selectedPath in fileContents ? selectedPath : Object.keys(fileContents)[0] || null;
   const [result, setResult] = useState<SubmitResult | null>(null);
   const [running, setRunning] = useState(false);
   const [executionError, setExecutionError] = useState('');
@@ -60,14 +61,12 @@ export default function ChallengePage() {
   useEffect(() => {
     if (!challenge || challenge.meta.id !== id) return;
     try { localStorage.setItem(`heisenbug:draft:${id}`, JSON.stringify(fileContents)); } catch { /* Editing remains usable if storage is full. */ }
-    if (!activeFile || !(activeFile in fileContents)) setActiveFile(Object.keys(fileContents)[0] || null);
-  }, [fileContents, challenge, id, activeFile]);
+  }, [fileContents, challenge, id]);
 
   useEffect(() => {
-    if (secondsLeft <= 0) return;
     const t = setInterval(() => setSecondsLeft((s) => Math.max(0, s - 1)), 1000);
     return () => clearInterval(t);
-  }, [secondsLeft > 0]);
+  }, []);
 
   useEffect(() => {
     if (leftTab !== "solution" || !challenge || solutionState !== "idle") return;
