@@ -47,6 +47,8 @@ export function registerAuth(app, db, cfg) {
   });
   app.post('/api/auth/logout', async (req, reply) => {
     origin(req);
+    const identity = user(req);
+    if (identity) db.prepare('DELETE FROM tickets WHERE user_id=?').run(identity.id);
     if (req.cookies.hb_session) db.prepare('DELETE FROM logins WHERE token=?').run(hash(req.cookies.hb_session));
     reply.clearCookie('hb_session', { path: '/' });
     return { ok: true };
