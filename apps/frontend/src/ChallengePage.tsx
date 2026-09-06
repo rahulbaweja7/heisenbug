@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import { API_BASE, type Challenge, type SubmitResult } from "./types";
@@ -6,6 +6,8 @@ import Markdown from "./Markdown";
 import FileTree from "./FileTree";
 import { markSolved } from "./progress";
 import "./ChallengePage.css";
+import WorkspacePanel, { type WorkspaceHandle } from './workspace/WorkspacePanel';
+import { api } from './workspace/api';
 
 export default function ChallengePage() {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +16,8 @@ export default function ChallengePage() {
   const [fileContents, setFileContents] = useState<Record<string, string>>({});
   const [result, setResult] = useState<SubmitResult | null>(null);
   const [running, setRunning] = useState(false);
+  const [executionError, setExecutionError] = useState('');
+  const workspace = useRef<WorkspaceHandle>(null);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [editingTimer, setEditingTimer] = useState(false);
   const [timerInput, setTimerInput] = useState("");
@@ -41,12 +45,23 @@ export default function ChallengePage() {
       })
       .then((c: Challenge) => {
         setChallenge(c);
-        setFileContents(c.files);
-        setActiveFile(Object.keys(c.files)[0]);
+        let files = c.files;
+        try {
+          const draft = JSON.parse(localStorage.getItem(`heisenbug:draft:${c.meta.id}`) || 'null');
+          if (draft && typeof draft === 'object' && !Array.isArray(draft) && Object.values(draft).every(value => typeof value === 'string')) files = draft;
+        } catch { /* Browser storage can be unavailable. */ }
+        setFileContents(files);
+        setActiveFile(Object.keys(files)[0] || null);
         setSecondsLeft(c.meta.timeLimitMinutes * 60);
       })
       .catch(() => setLoadError(true));
   }, [id]);
+
+  useEffect(() => {
+    if (!challenge || challenge.meta.id !== id) return;
+    try { localStorage.setItem(`heisenbug:draft:${id}`, JSON.stringify(fileContents)); } catch { /* Editing remains usable if storage is full. */ }
+    if (!activeFile || !(activeFile in fileContents)) setActiveFile(Object.keys(fileContents)[0] || null);
+  }, [fileContents, challenge, id, activeFile]);
 
   useEffect(() => {
     if (secondsLeft <= 0) return;
@@ -81,16 +96,12 @@ export default function ChallengePage() {
     if (!challenge) return;
     setRunning(true);
     setResult(null);
+    setExecutionError('');
     try {
-      const res = await fetch(
-        `${API_BASE}/api/challenges/${challenge.meta.id}/submit`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ files: fileContents }),
-        }
-      );
-      setResult(await res.json());
+      const files = await workspace.current?.flush() || fileContents;
+      setResult(await api<SubmitResult>(`/api/challenges/${challenge.meta.id}/submit`, { method: 'POST', body: JSON.stringify({ files }) }));
+    } catch (error) {
+      setExecutionError((error as Error).message);
     } finally {
       setRunning(false);
     }
@@ -132,7 +143,7 @@ export default function ChallengePage() {
     );
   }
 
-  if (!challenge || !activeFile) {
+  if (!challenge) {
     return <div className="cp-loading">Loading challenge...</div>;
   }
 
@@ -253,8 +264,8 @@ export default function ChallengePage() {
         <aside className="cp-explorer">
           <div className="cp-explorer-heading">Explorer</div>
           <FileTree
-            paths={Object.keys(challenge.files)}
-            activeFile={activeFile}
+            paths={Object.keys(fileContents)}
+            activeFile={activeFile || ''}
             onSelect={setActiveFile}
           />
         </aside>
@@ -262,7 +273,7 @@ export default function ChallengePage() {
         <main className="cp-workspace">
           <div className="cp-file-tabs">
             <div className="cp-file-tabs-scroll">
-              {Object.keys(challenge.files).map((path) => (
+              {Object.keys(fileContents).map((path) => (
                 <button
                   key={path}
                   className={path === activeFile ? "cp-tab active" : "cp-tab"}
@@ -273,6 +284,12 @@ export default function ChallengePage() {
               ))}
             </div>
             <div className="cp-file-tabs-spacer" />
+            <button className="cp-reset-btn" onClick={() => {
+              const name = prompt('New file path, for example scratch.py');
+              if (!name) return;
+              if (!/^[a-zA-Z0-9_./-]+$/.test(name) || name.split('/').some(part => !part || part === '.' || part === '..') || name.startsWith('tests/')) { setExecutionError('Use a relative file path outside tests/.'); return; }
+              setFileContents(previous => ({ ...previous, [name]: previous[name] ?? '' })); setActiveFile(name);
+            }}>New file</button>
             <button className="cp-reset-btn" onClick={handleReset}>
               Reset
             </button>
@@ -282,20 +299,23 @@ export default function ChallengePage() {
           </div>
 
           <div className="cp-editor-pane">
-            <Editor
+            {activeFile ? <Editor
               height="100%"
-              language={challenge.meta.language}
-              path={activeFile}
+              language={activeFile.endsWith('.html') ? 'html' : activeFile.endsWith('.md') ? 'markdown' : challenge.meta.language}
+              path={`${challenge.meta.id}/${activeFile}`}
               value={fileContents[activeFile]}
               onChange={(value) =>
                 setFileContents((prev) => ({ ...prev, [activeFile]: value ?? "" }))
               }
               theme="vs-dark"
               options={{ minimap: { enabled: false }, fontSize: 13 }}
-            />
+            /> : <p className="ws-empty">Create a file to begin editing.</p>}
           </div>
 
+          <WorkspacePanel key={challenge.meta.id} ref={workspace} challengeId={challenge.meta.id} files={fileContents} setFiles={setFileContents} />
+
           <div className="cp-console">
+            {executionError && <div className="ws-error" role="alert">{executionError}</div>}
             {!result && (
               <div className="cp-console-placeholder">
                 <svg
