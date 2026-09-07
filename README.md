@@ -9,10 +9,9 @@ roadmap, monetization, risks).
 
 ## Status
 
-Phase 1 walking skeleton: Monaco editor + file tree renders a hardcoded
-challenge, submit sends edited files to the backend, backend runs the hidden
-pytest suite and returns pass/fail. One challenge (`001-off-by-one-inventory`)
-works end to end.
+Python debugging challenges run in a Monaco editor with browser drafts. GitHub
+authentication gates E2B terminals, CineMatch web previews, and isolated pytest
+grading. Execution is disabled by default until the service is configured.
 
 ## Structure
 
@@ -36,34 +35,14 @@ challenges/challenge-XXX-slug/
 
 ## Running locally
 
-Requires Node 20+ and Python 3 with `pytest` installed (`pip install pytest`)
-— pytest is what actually runs the hidden test suite against submissions.
+Requires Node 22.20+. Install dependencies and run `npm run dev` separately in
+`apps/backend` and `apps/frontend`. Browse at `http://localhost:5173`.
 
-```bash
-# backend (http://localhost:4001)
-cd apps/backend
-npm install
-npm run dev
+Challenge browsing and editing work without execution credentials. Interactive
+terminals, web previews, and grading use isolated E2B sandboxes and require GitHub
+sign-in. There is no local subprocess fallback.
 
-# frontend (http://localhost:5173)
-cd apps/frontend
-npm install
-npm run dev
-```
-
-## Important: code execution is NOT sandboxed yet
-
-`apps/backend/src/runner.js` currently runs `pytest` as a local subprocess on
-whatever machine the backend is running on — no isolation, no resource
-limits. This is fine for local development but **must** be swapped for
-Judge0 or an isolated Docker sandbox (no network, CPU/memory/time limits)
-before this is ever exposed to the public or run against untrusted
-submissions. See section 5.2 of the plan.
-
-## Next steps (Phase 2)
-
-- Challenge list page with difficulty/category filters
-- localStorage progress tracking
-- Post-solve explanation view (content already exists in `explanation.md` per
-  challenge, just needs a UI)
-- Write ~10 more challenges (Python first)
+See [Interactive execution setup](docs/execution.md) for the environment file,
+GitHub OAuth setup, E2B template build, deployment requirements, and test commands.
+CineMatch includes a runnable movie-search web preview; other Python challenges
+support shell/REPL execution and isolated grading.

@@ -1,0 +1,15 @@
+.ws-panel { border-top: 1px solid #303039; background: #111318; flex-shrink: 0; color: #d4d4dc; font-size: 12px; max-height: 48vh; overflow: auto; }
+.ws-toolbar, .ws-tabs, .ws-terminal-status, .ws-conflict { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 12px; }
+.ws-panel button, .ws-panel a { background: #23232e; border: 1px solid #444453; border-radius: 5px; color: #e0d9f7; padding: 5px 9px; cursor: pointer; font: inherit; text-decoration: none; }
+.ws-panel button:hover, .ws-panel a:hover { border-color: #a78bfa; }
+.ws-panel button:disabled { opacity: .45; cursor: default; }
+.ws-panel button[aria-pressed=true] { border-color: #a78bfa; background: #342b4c; }
+.ws-save { margin-left: auto; color: #aaa7b7; }
+.ws-empty { padding: 5px 12px 14px; color: #aaa7b7; }
+.ws-error { padding: 9px 12px; background: #47232b; display: flex; justify-content: space-between; gap: 12px; }
+.ws-conflict { background: #443a22; }
+.ws-terminal-host { height: 210px; padding: 0 10px 8px; }
+.ws-terminal-status { padding-block: 3px; color: #a5a5b6; }
+.ws-tabs { border-top: 1px solid #303039; }
+.ws-panel iframe { display: block; width: 100%; height: 300px; background: white; border: 0; }
+@media (max-width: 900px) { .ws-save { margin-left: 0; } .ws-terminal-host { height: 180px; } }

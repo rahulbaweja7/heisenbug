@@ -9,6 +9,7 @@ export type Meta = {
   bugCategories: string[];
   filesVisible: string[];
   description: string;
+  workspace?: { startCommand: string; previewPort: number };
 };
 
 export type Challenge = { meta: Meta; files: Record<string, string> };
