@@ -1,5 +1,6 @@
 import { fail } from './config.js';
 import { token, hash } from './store.js';
+import { runSubmission } from '../runner.js';
 export function registerExecution(app, service, auth, cfg, db) {
   const access = req => { auth.origin(req); return auth.requireUser(req); };
   const owned = req => service.owned(req.params.id, auth.requireUser(req).id);
@@ -20,7 +21,18 @@ export function registerExecution(app, service, auth, cfg, db) {
     if (snapshot.conflict) reply.code(409);
     return snapshot;
   });
-  app.post('/api/challenges/:id/submit', async req => service.grade(access(req).id, req.params.id, req.body?.files));
+  // With no E2B key / EXECUTION_ENABLED=false, grade locally and unauthenticated
+  // so the existing pytest-based challenge library works with zero cloud setup.
+  // When execution is enabled, grading requires a signed-in user and runs in an
+  // isolated E2B sandbox instead (see ExecutionService.grade).
+  app.post('/api/challenges/:id/submit', async (req, reply) => {
+    if (!cfg.enabled) {
+      const { files } = req.body ?? {};
+      if (!files || typeof files !== 'object') { reply.code(400); return { error: 'expected { files: { [path]: contents } }' }; }
+      return runSubmission(req.params.id, files);
+    }
+    return service.grade(access(req).id, req.params.id, req.body?.files);
+  });
   app.post('/api/workspaces/:id/preview', async req => {
     access(req); const session = owned(req);
     const preview = session.previewConfig;
