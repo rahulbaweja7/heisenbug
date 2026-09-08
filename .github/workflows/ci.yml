@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install backend deps
+        working-directory: apps/backend
+        run: npm ci
+      - name: Run backend tests
+        working-directory: apps/backend
+        run: npm test
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Linux-only workspace file bridge tests
+        working-directory: apps/backend
+        run: python3 test/workspace-files.test.py
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install frontend deps
+        working-directory: apps/frontend
+        run: npm ci
+      - name: Typecheck + build
+        working-directory: apps/frontend
+        run: npm run build
+      - name: Lint
+        working-directory: apps/frontend
+        run: npm run lint
+      - name: Run frontend tests
+        working-directory: apps/frontend
+        run: npm test
+
+  cinematch-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: CineMatch preview adapter checks
+        run: python scripts/test-cinematch-preview.py
