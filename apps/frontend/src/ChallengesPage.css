@@ -65,6 +65,33 @@
   margin-top: 8px;
 }
 
+.ch-search-row {
+  max-width: 900px;
+  margin: 0 auto 16px;
+}
+
+.ch-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: #161616;
+  border: 1px solid #242424;
+  border-radius: 10px;
+  color: #eee;
+  font-size: 14px;
+  padding: 12px 16px;
+  min-height: 44px;
+}
+
+.ch-search-input::placeholder {
+  color: #666;
+}
+
+.ch-search-input:focus {
+  outline: none;
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.25);
+}
+
 .ch-toolbar {
   position: relative;
   max-width: 900px;
