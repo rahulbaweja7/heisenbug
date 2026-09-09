@@ -29,24 +29,27 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 - [ ] Decide whether the local pytest fallback (PR #15) should stay permanently for the plain-pytest challenges even after E2B is live, or if everything should eventually move to sandboxed grading
 
 ### Product features
-- [ ] Timed mock assessment mode — bundle 3 challenges, 90 min, single score
-- [ ] Migrate solved/progress tracking off localStorage now that GitHub OAuth + SQLite sessions exist
+- [ ] Timed mock assessment mode — bundle N challenges, one timer, single score at the end (biggest remaining product gap)
+- [ ] Register a real GitHub OAuth app (doesn't need E2B — `/api/auth/github` only checks `clientId`/`clientSecret`, not `EXECUTION_ENABLED`) and migrate solved/progress tracking off localStorage onto it
 - [ ] Difficulty calibration from real usage data (once there are users)
 - [ ] Second language support (Java is the next most common OA language)
 
 ### Deploy
-- [ ] Pick hosting: frontend (Vercel) + backend (Fly.io or small VPS)
-- [ ] Rate limiting on the submit endpoint
-- [ ] Domain name
+- [ ] Pick hosting: needs one persistent stateful backend instance (in-memory PTY sessions + rate limiter, no horizontal scaling support) — Fly.io fits, a serverless split doesn't
+- [ ] Domain name — `APP_ORIGIN`/`API_ORIGIN`/`PREVIEW_ORIGIN` must be same-site under one parent domain for CORS/cookies to work, rules out a naive Vercel+Fly split without subdomains
+- [ ] No backend Dockerfile exists yet (only the E2B *sandbox* template Dockerfile, which can't run the API)
+- [ ] Rate limiting on the submit endpoint (currently one global in-memory limiter, fine at current scale)
 
 ### Polish / bugs
-- [ ] Audit mobile responsiveness across all three pages (landing, /challenges, IDE)
 - [ ] Add basic analytics (attempts/completions per challenge)
+- [ ] CONTRIBUTING.md / issue & PR templates (low urgency while it's just the two of us)
 
 ---
 
 ## Done
 
+- [x] Rahul — completeness audit + Phase 1 polish batch: collapsed the dead Workspace panel on every challenge when execution is disabled, fixed stale README claims, added challenge-search, MIT LICENSE, report-an-issue link, mobile fix for the Workspace preview iframe — PRs #18–#23
+- [x] Rahul — CI pipeline (backend/frontend/cinematch-preview checks) + branch protection requiring it on master — PRs #16, #17
 - [x] Rahul — restored local pytest fallback so /submit works with zero cloud setup (EXECUTION_ENABLED=false path) — PR #15
 - [x] Kashyap — E2B cloud sandbox execution, GitHub OAuth (PKCE) + SQLite sessions, live terminal (xterm) + web preview for full runnable apps, CineMatch (Django movie search) as the first web-preview challenge — PR #14, 48 challenges total now
 - [x] Rahul — settable IDE timer (click to set a custom time limit, 1-180 min) — PR #13
