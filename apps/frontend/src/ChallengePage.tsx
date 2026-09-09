@@ -8,6 +8,7 @@ import { markSolved } from "./progress";
 import "./ChallengePage.css";
 import WorkspacePanel, { type WorkspaceHandle } from './workspace/WorkspacePanel';
 import { api } from './workspace/api';
+import Modal from './Modal';
 
 export default function ChallengePage() {
   const { id } = useParams<{ id: string }>();
@@ -29,6 +30,8 @@ export default function ChallengePage() {
   const [solutionState, setSolutionState] = useState<
     "idle" | "loading" | "loaded" | "unavailable"
   >("idle");
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [newFileDialog, setNewFileDialog] = useState<{ value: string; error: string } | null>(null);
 
   useEffect(() => {
     setChallenge(null);
@@ -121,12 +124,28 @@ export default function ChallengePage() {
 
   function handleReset() {
     if (!challenge) return;
-    if (!confirm("Reset all files back to the starter code? This can't be undone.")) {
-      return;
-    }
+    setShowResetConfirm(true);
+  }
+
+  function confirmReset() {
+    if (!challenge) return;
     setFileContents(challenge.files);
     setResult(null);
     setExplanation(null);
+    setShowResetConfirm(false);
+  }
+
+  function confirmNewFile() {
+    if (!newFileDialog) return;
+    const name = newFileDialog.value.trim();
+    if (!name) { setNewFileDialog(null); return; }
+    if (!/^[a-zA-Z0-9_./-]+$/.test(name) || name.split('/').some(part => !part || part === '.' || part === '..') || name.startsWith('tests/')) {
+      setNewFileDialog({ ...newFileDialog, error: 'Use a relative file path outside tests/.' });
+      return;
+    }
+    setFileContents(previous => ({ ...previous, [name]: previous[name] ?? '' }));
+    setActiveFile(name);
+    setNewFileDialog(null);
   }
 
   if (loadError) {
@@ -283,12 +302,7 @@ export default function ChallengePage() {
               ))}
             </div>
             <div className="cp-file-tabs-spacer" />
-            <button className="cp-reset-btn" onClick={() => {
-              const name = prompt('New file path, for example scratch.py');
-              if (!name) return;
-              if (!/^[a-zA-Z0-9_./-]+$/.test(name) || name.split('/').some(part => !part || part === '.' || part === '..') || name.startsWith('tests/')) { setExecutionError('Use a relative file path outside tests/.'); return; }
-              setFileContents(previous => ({ ...previous, [name]: previous[name] ?? '' })); setActiveFile(name);
-            }}>New file</button>
+            <button className="cp-reset-btn" onClick={() => setNewFileDialog({ value: '', error: '' })}>New file</button>
             <button className="cp-reset-btn" onClick={handleReset}>
               Reset
             </button>
@@ -345,6 +359,33 @@ export default function ChallengePage() {
           </div>
         </main>
       </div>
+
+      {showResetConfirm && (
+        <Modal
+          title="Reset files?"
+          message="This resets every file back to the starter code. Your current changes can't be recovered."
+          confirmLabel="Reset"
+          danger
+          onConfirm={confirmReset}
+          onCancel={() => setShowResetConfirm(false)}
+        />
+      )}
+
+      {newFileDialog && (
+        <Modal
+          title="New file"
+          message="File path relative to the project root, for example scratch.py."
+          input={{
+            value: newFileDialog.value,
+            onChange: (value) => setNewFileDialog({ value, error: "" }),
+            placeholder: "scratch.py",
+          }}
+          error={newFileDialog.error}
+          confirmLabel="Create"
+          onConfirm={confirmNewFile}
+          onCancel={() => setNewFileDialog(null)}
+        />
+      )}
     </div>
   );
 }
