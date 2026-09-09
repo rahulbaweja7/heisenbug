@@ -35,6 +35,7 @@ export function registerAnalytics(app, auth, db, cfg) {
     const events = db.prepare('SELECT challenge_id,event_type,session_id,visitor_id,received_at FROM analytics_events WHERE received_at>=? AND received_at<?').all(lo, hi);
     const retainedEvents = db.prepare('SELECT visitor_id,session_id,MIN(received_at) first_seen FROM analytics_events WHERE received_at<? GROUP BY visitor_id,session_id').all(hi);
     const submissions = db.prepare('SELECT challenge_id,outcome,completed_at,user_id,session_id FROM submissions WHERE completed_at>=? AND completed_at<?').all(lo, hi);
+    const funnelSubmissions = db.prepare('SELECT challenge_id,session_id,created_at FROM submissions WHERE session_id IS NOT NULL AND created_at>=? AND created_at<?').all(lo, hi);
     const starts = db.prepare('SELECT challenge_id,started_at,session_id FROM workspace_starts WHERE successful=1 AND started_at>=? AND started_at<?').all(lo, hi);
     const rows = new Map();
     const get = challengeId => rows.get(challengeId) || { challenge_id: challengeId, views: 0, practice_starts: 0, successful_workspace_starts: 0, completed_submissions: 0, passing_submissions: 0, unique_verified_solvers: 0, infrastructure_errors: 0, pass_rate: null, tracked_session_conversion: null };
@@ -50,7 +51,7 @@ export function registerAnalytics(app, auth, db, cfg) {
     }
     const viewedPairs = new Map();
     for (const event of events.filter(event => event.event_type === 'challenge_view')) viewedPairs.set(`${event.challenge_id}:${event.session_id}`, Math.min(viewedPairs.get(`${event.challenge_id}:${event.session_id}`) ?? Infinity, event.received_at));
-    const convertedPairs = new Set(submissions.filter(item => item.session_id && ['passed','failed'].includes(item.outcome) && item.completed_at >= (viewedPairs.get(`${item.challenge_id}:${item.session_id}`) ?? Infinity)).map(item => `${item.challenge_id}:${item.session_id}`));
+    const convertedPairs = new Set(funnelSubmissions.filter(item => item.created_at >= (viewedPairs.get(`${item.challenge_id}:${item.session_id}`) ?? Infinity)).map(item => `${item.challenge_id}:${item.session_id}`));
     for (const [challengeId, row] of rows) {
       row.unique_verified_solvers = solverSets.get(challengeId)?.size || 0;
       row.pass_rate = row.completed_submissions ? row.passing_submissions / row.completed_submissions : null;
@@ -74,7 +75,7 @@ export function registerAnalytics(app, auth, db, cfg) {
       from, to, daily, challenges: [...rows.values()],
       grading_totals: { completed_submissions: completed, passing_submissions: submissions.filter(item => item.outcome === 'passed').length, infrastructure_errors: submissions.filter(item => item.outcome === 'infrastructure_error').length },
       consented_funnel: { tracked_visitors: new Set(events.map(item => item.visitor_id)).size, returning_visitors: returningVisitors, viewed_sessions: viewedPairs.size, converted_sessions: convertedPairs.size },
-      definitions: { pass_rate: 'passing submissions / completed submissions', tracked_session_conversion: 'viewed challenge/session pairs with a later completed submission for that challenge and session', returning_visitors: 'consented visitors with an earlier tracked session in retained history' }
+      definitions: { pass_rate: 'passing submissions / completed submissions', tracked_session_conversion: 'viewed challenge/session pairs with a later accepted submission for that challenge and session', returning_visitors: 'consented visitors with an earlier tracked session in retained history' }
     };
   });
 }

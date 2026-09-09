@@ -51,7 +51,7 @@ referrers, editor contents, or terminal contents in analytics records.
 
 Dashboard browser-funnel metrics cover consented activity. Returning visitors have
 an earlier tracked session in retained history. Tracked conversion is the share of
-viewed challenge/session pairs followed by a completed submission for that same
+viewed challenge/session pairs followed by an accepted submission for that same
 challenge and session. Pass rate is passing submissions divided by completed
 submissions. All-account grading totals are shown separately, and imported solves
 never contribute to verified completion metrics.
