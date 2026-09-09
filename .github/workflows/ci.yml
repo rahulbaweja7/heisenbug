@@ -1,60 +1,187 @@
 name: CI
-
 on:
+  pull_request:
   push:
     branches: [master]
-  pull_request:
-    branches: [master]
-
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  backend:
-    runs-on: ubuntu-latest
+  backend-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: "24"
-      - name: Install backend deps
+          node-version: 22.20.0
+          cache: npm
+          cache-dependency-path: apps/backend/package-lock.json
+      - run: npm ci
         working-directory: apps/backend
-        run: npm ci
-      - name: Run backend tests
+      - name: Test with coverage
+        run: set -o pipefail; npm run test:coverage | tee coverage.txt
         working-directory: apps/backend
-        run: npm test
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          python-version: "3.13"
-      - name: Linux-only workspace file bridge tests
-        working-directory: apps/backend
-        run: python3 test/workspace-files.test.py
-
-  frontend:
-    runs-on: ubuntu-latest
+          name: backend-coverage
+          path: apps/backend/coverage.txt
+          retention-days: 7
+  frontend-checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: "24"
-      - name: Install frontend deps
+          node-version: 22.20.0
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - run: npm ci
         working-directory: apps/frontend
-        run: npm ci
-      - name: Typecheck + build
+      - run: npm run test:coverage
         working-directory: apps/frontend
-        run: npm run build
-      - name: Lint
+      - run: npm run lint
         working-directory: apps/frontend
-        run: npm run lint
-      - name: Run frontend tests
+      - run: npm run build
         working-directory: apps/frontend
-        run: npm test
-
-  cinematch-preview:
-    runs-on: ubuntu-latest
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: frontend-coverage
+          path: apps/frontend/coverage
+          retention-days: 7
+  python-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: python3 -m pip install --disable-pip-version-check pytest
+      - run: python3 apps/backend/test/workspace-files.test.py
+      - run: python3 scripts/test-cinematch-preview.py
+      - name: Challenge contracts
+        run: python3 scripts/test-challenges.py --json > challenge-contracts.json
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          python-version: "3.13"
-      - name: CineMatch preview adapter checks
-        run: python scripts/test-cinematch-preview.py
+          name: challenge-contracts
+          path: challenge-contracts.json
+          retention-days: 7
+  browser-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.20.0
+          cache: npm
+          cache-dependency-path: |
+            apps/backend/package-lock.json
+            apps/frontend/package-lock.json
+      - run: npm ci
+        working-directory: apps/backend
+      - run: npm ci
+        working-directory: apps/frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: apps/frontend
+      - run: npm run test:e2e
+        working-directory: apps/frontend
+      - if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: playwright-failures
+          path: |
+            apps/frontend/playwright-report
+            apps/frontend/test-results
+          retention-days: 7
+  backend-image:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build production backend image
+        run: docker build --build-arg BUILD_SHA="$GITHUB_SHA" -f apps/backend/Dockerfile -t heisenbug-backend:test .
+      - name: Smoke-test container health and catalog
+        run: |
+          docker run -d --name heisenbug-backend-test -p 127.0.0.1:4001:4001 -e EXECUTION_ENABLED=false heisenbug-backend:test
+          trap 'docker logs heisenbug-backend-test; docker rm -f heisenbug-backend-test' EXIT
+          for attempt in {1..30}; do
+            curl --fail --silent http://127.0.0.1:4001/api/health > health.json && break
+            sleep 1
+          done
+          jq -e --arg revision "$GITHUB_SHA" '.ok == true and .executionEnabled == false and .revision == $revision' health.json
+          curl --fail --silent http://127.0.0.1:4001/api/challenges | jq -e 'type == "array" and length > 0'
+  ci-required:
+    if: always()
+    needs: [backend-tests, frontend-checks, python-contracts, browser-tests, backend-image]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Require every CI job
+        env:
+          BACKEND: ${{ needs.backend-tests.result }}
+          FRONTEND: ${{ needs.frontend-checks.result }}
+          PYTHON: ${{ needs.python-contracts.result }}
+          BROWSER: ${{ needs.browser-tests.result }}
+          IMAGE: ${{ needs.backend-image.result }}
+        run: test "$BACKEND" = success && test "$FRONTEND" = success && test "$PYTHON" = success && test "$BROWSER" = success && test "$IMAGE" = success
+  publish-backend:
+    needs: ci-required
+    if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch && needs.ci-required.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.image.outputs.name }}
+      digest: ${{ steps.push.outputs.digest }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - id: image
+        name: Resolve lowercase image name
+        shell: bash
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}-backend" >> "$GITHUB_OUTPUT"
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - id: push
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          file: apps/backend/Dockerfile
+          push: true
+          tags: ${{ steps.image.outputs.name }}:${{ github.sha }}
+          build-args: BUILD_SHA=${{ github.sha }}
+  deploy-backend:
+    needs: [ci-required, publish-backend]
+    if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch && needs.ci-required.result == 'success' && needs.publish-backend.result == 'success'
+    environment: production
+    concurrency:
+      group: heisenbug-production
+      cancel-in-progress: false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Reject superseded deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: test "$(gh api "repos/$GITHUB_REPOSITORY/commits/${{ github.event.repository.default_branch }}" --jq .sha)" = "$GITHUB_SHA"
+      - name: Deploy tested image through Coolify
+        env:
+          COOLIFY_URL: ${{ vars.COOLIFY_URL }}
+          COOLIFY_APP_UUID: ${{ vars.COOLIFY_APP_UUID }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          API_ORIGIN: ${{ vars.API_ORIGIN }}
+          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_DIGEST: ${{ needs.publish-backend.outputs.digest }}
+        run: ./scripts/deploy-backend.sh
