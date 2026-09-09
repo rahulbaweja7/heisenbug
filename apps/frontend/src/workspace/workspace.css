@@ -1,4 +1,5 @@
 .ws-panel { border-top: 1px solid #303039; background: #111318; flex-shrink: 0; color: #d4d4dc; font-size: 12px; max-height: 48vh; overflow: auto; }
+.ws-disabled-hint { margin: 0; border-top: 1px solid #303039; background: #111318; flex-shrink: 0; color: #7d7a8c; font-size: 11.5px; padding: 8px 12px; }
 .ws-toolbar, .ws-tabs, .ws-terminal-status, .ws-conflict { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 12px; }
 .ws-panel button, .ws-panel a { background: #23232e; border: 1px solid #444453; border-radius: 5px; color: #e0d9f7; padding: 5px 9px; cursor: pointer; font: inherit; text-decoration: none; }
 .ws-panel button:hover, .ws-panel a:hover { border-color: #a78bfa; }

@@ -122,6 +122,10 @@ const WorkspacePanel = forwardRef<WorkspaceHandle, Props>(function WorkspacePane
     conflictRef.current = conflictRef.current.filter(path => path !== name); setConflicts([...conflictRef.current]); setError('');
     if (!conflictRef.current.length) void synchronize().catch(e => setError(e.message));
   }
+  if (identity && !identity.executionEnabled && !workspace) {
+    return <p className="ws-disabled-hint" aria-label="Code execution">Code execution isn't enabled on this server yet — you can still edit and run tests above.</p>;
+  }
+
   return <section className="ws-panel" aria-label="Code execution">
     <div className="ws-toolbar">
       <strong>Workspace</strong>
@@ -131,7 +135,7 @@ const WorkspacePanel = forwardRef<WorkspaceHandle, Props>(function WorkspacePane
     </div>
     {error && <div className="ws-error" role="alert">{error}<button onClick={() => setError('')} aria-label="Dismiss error">×</button></div>}
     {conflicts.map(name => <div className="ws-conflict" key={name}><span>Conflicting edits: {name}</span><button onClick={() => resolve(name, false)}>Keep editor</button><button onClick={() => resolve(name, true)}>Use terminal version</button></div>)}
-    {!workspace && <p className="ws-empty">{identity && !identity.executionEnabled ? 'Code execution is not enabled on this server yet.' : 'Start a workspace to run Python, use the shell, and preview web challenges.'}</p>}
+    {!workspace && <p className="ws-empty">Start a workspace to run Python, use the shell, and preview web challenges.</p>}
     {workspace && <><div className="ws-tabs"><button aria-pressed={tab === 'terminal'} onClick={() => setTab('terminal')}>Terminal</button><button disabled={!workspace.previewAvailable || busy} aria-pressed={tab === 'preview'} onClick={() => preview ? setTab('preview') : openPreview()}>Preview</button><span>Expires {new Date(workspace.deadline).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>{tab === 'preview' && <><span role="status">{previewStatus}</span><button disabled={busy} onClick={() => openPreview()}>Refresh</button><button disabled={busy} onClick={() => openPreview(true)}>Restart server</button></>}</div>
       <div hidden={tab !== 'terminal'}><Suspense fallback={<p className="ws-empty">Loading terminal…</p>}><Terminal id={workspace.id} flush={() => synchronize()} onError={setError} /></Suspense></div>
       {tab === 'preview' && preview && <iframe title="Challenge web preview" src={preview} sandbox="allow-scripts allow-forms allow-same-origin" referrerPolicy="no-referrer" onLoad={() => setPreviewStatus('Loaded')} onError={() => setPreviewStatus('Unavailable')} />}
