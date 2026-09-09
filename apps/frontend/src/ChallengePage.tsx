@@ -228,6 +228,16 @@ export default function ChallengePage() {
               </span>
             ))}
           </div>
+          <a
+            className="cp-report-link"
+            href={`https://github.com/rahulbaweja7/heisenbug/issues/new?title=${encodeURIComponent(
+              `Issue with challenge ${challenge.meta.id}: ${challenge.meta.title}`
+            )}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Report an issue with this challenge
+          </a>
           <div className="cp-left-tabs">
             <button
               className={leftTab === "description" ? "cp-left-tab active" : "cp-left-tab"}
