@@ -1,4 +1,4 @@
-export const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:4001";
+export const API_BASE = import.meta.env?.VITE_API_BASE ?? "http://localhost:4001";
 
 export type Meta = {
   id: string;

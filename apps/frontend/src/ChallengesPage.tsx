@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { API_BASE, type Meta } from "./types";
 import { getSolvedIds } from "./progress";
+import { useIdentity } from './IdentityContext';
+import { analyticsConsent, setAnalyticsConsent } from './analytics';
 import "./ChallengesPage.css";
 
 const DIFFICULTIES = ["all", "easy", "medium", "hard"] as const;
@@ -14,6 +16,10 @@ export default function ChallengesPage() {
   const [category, setCategory] = useState<string>("all");
   const [solvedIds, setSolvedIds] = useState<string[]>([]);
   const [loadError, setLoadError] = useState(false);
+  const { identity, progress, progressState, refresh, signOut } = useIdentity();
+  const [importState, setImportState] = useState<'idle'|'saving'|'error'>('idle');
+  const [importDecision, setImportDecision] = useState(0);
+  const [analyticsAllowed, setAnalyticsAllowed] = useState(analyticsConsent());
 
   useEffect(() => {
     fetch(`${API_BASE}/api/challenges`)
@@ -25,7 +31,16 @@ export default function ChallengesPage() {
       .catch(() => setLoadError(true))
       .finally(() => setLoading(false));
     setSolvedIds(getSolvedIds());
+    refresh();
   }, []);
+  const accountIds = progress.map((p) => p.challenge_id);
+  const eligible = solvedIds.filter((id) => !accountIds.includes(id));
+  const importKey = identity?.user ? `heisenbug:import:${identity.user.id}` : '';
+  const importHandled = importKey ? localStorage.getItem(importKey) === '1' : true;
+  async function importProgress() {
+    setImportState('saving');
+    try { const response = await fetch(`${API_BASE}/api/progress/import`, { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ challengeIds: eligible }) }); if (!response.ok) throw new Error(); localStorage.setItem(importKey, '1'); await refresh(); setImportState('idle'); } catch { setImportState('error'); }
+  }
 
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -52,7 +67,18 @@ export default function ChallengesPage() {
         <p className="ch-subheading">
           Pick a challenge below and start debugging.
         </p>
+        <div className="ch-account">
+          {identity?.user ? <><span>Signed in as @{identity.user.login}</span><button onClick={() => void signOut()}>Sign out</button>{identity.isAdmin && <Link to="/admin/analytics">Analytics</Link>}</> : <a href={`${API_BASE}/api/auth/github?returnTo=/challenges`}>Sign in with GitHub</a>}
+        </div>
+        <div className="ch-analytics-choice" aria-label="Analytics preference">
+          <span>Help improve Heisenbug with anonymous browser activity?</span>
+          <button aria-pressed={analyticsAllowed} onClick={() => { setAnalyticsConsent(true); setAnalyticsAllowed(true); }}>Allow analytics</button>
+          <button aria-pressed={!analyticsAllowed} onClick={() => { setAnalyticsConsent(false); setAnalyticsAllowed(false); }}>Decline</button>
+        </div>
       </header>
+
+      {identity?.user && eligible.length > 0 && !importHandled && <section className="ch-import" aria-label="Import browser progress" data-decision={importDecision}><strong>Import browser progress</strong><p>Import {eligible.length} browser solve{eligible.length === 1 ? '' : 's'} to @{identity.user.login}. Your browser marks will stay here and imported solves remain labeled until verified.</p><button disabled={importState === 'saving'} onClick={() => void importProgress()}>{importState === 'saving' ? 'Importing…' : 'Import browser progress'}</button><button onClick={() => { localStorage.setItem(importKey, '1'); setImportDecision(value => value + 1); }}>Not now</button>{importState === 'error' && <p role="alert">Import failed. Please try again.</p>}</section>}
+      {identity?.user && progressState === 'unavailable' && <div className="ch-state-message" role="alert">Account progress is unavailable. <button onClick={() => void refresh()}>Retry</button></div>}
 
       <div className="ch-toolbar">
         <div className="ch-filter-group">
@@ -95,8 +121,8 @@ export default function ChallengesPage() {
       <div className="ch-result-count">
         {!loading &&
           `${filtered.length} challenge${filtered.length === 1 ? "" : "s"}` +
-            (solvedIds.length > 0
-              ? ` — ${solvedIds.length}/${challenges.length} solved`
+            (new Set([...solvedIds, ...accountIds]).size > 0
+              ? ` — ${new Set([...solvedIds, ...accountIds]).size}/${challenges.length} solved`
               : "")}
       </div>
 
@@ -144,7 +170,8 @@ export default function ChallengesPage() {
             <tbody>
               {filtered.map((c) => {
                 const num = c.id.match(/^\d+/)?.[0] ?? "";
-                const solved = solvedIds.includes(c.id);
+                const entry = progress.find((p) => p.challenge_id === c.id);
+                const solved = solvedIds.includes(c.id) || !!entry;
                 return (
                   <tr
                     key={c.id}
@@ -153,7 +180,7 @@ export default function ChallengesPage() {
                   >
                     <td className="ch-col-status">
                       {solved && (
-                        <span className="ch-solved-check" title="Solved">
+                        <span className="ch-solved-check" title={entry?.verified ? "Verified solve" : entry?.imported ? "Imported browser solve" : "Solved"}>
                           &#10003;
                         </span>
                       )}
