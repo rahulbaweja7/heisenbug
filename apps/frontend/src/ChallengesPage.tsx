@@ -12,6 +12,7 @@ export default function ChallengesPage() {
   const [loading, setLoading] = useState(true);
   const [difficulty, setDifficulty] = useState<string>("all");
   const [category, setCategory] = useState<string>("all");
+  const [search, setSearch] = useState("");
   const [solvedIds, setSolvedIds] = useState<string[]>([]);
   const [loadError, setLoadError] = useState(false);
 
@@ -36,6 +37,7 @@ export default function ChallengesPage() {
   const filtered = challenges.filter((c) => {
     if (difficulty !== "all" && c.difficulty !== difficulty) return false;
     if (category !== "all" && !c.bugCategories.includes(category)) return false;
+    if (search.trim() && !c.title.toLowerCase().includes(search.trim().toLowerCase())) return false;
     return true;
   });
 
@@ -53,6 +55,17 @@ export default function ChallengesPage() {
           Pick a challenge below and start debugging.
         </p>
       </header>
+
+      <div className="ch-search-row">
+        <input
+          type="text"
+          className="ch-search-input"
+          placeholder="Search challenges by title..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          aria-label="Search challenges by title"
+        />
+      </div>
 
       <div className="ch-toolbar">
         <div className="ch-filter-group">
@@ -121,6 +134,7 @@ export default function ChallengesPage() {
             onClick={() => {
               setDifficulty("all");
               setCategory("all");
+              setSearch("");
             }}
           >
             Clear filters
