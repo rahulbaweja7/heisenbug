@@ -9,7 +9,8 @@ export function registerExecution(app, service, auth, cfg, db) {
   });
   app.post('/api/workspaces', async req => {
     const user = access(req);
-    return service.describe(await service.create(user.id, req.body?.challengeId, req.body?.files));
+    if (req.body?.analyticsSessionId !== undefined && (typeof req.body.analyticsSessionId !== 'string' || !/^[A-Za-z0-9_-]{8,100}$/.test(req.body.analyticsSessionId))) throw fail(400, 'Invalid analytics session ID');
+    return service.describe(await service.create(user.id, req.body?.challengeId, req.body?.files, 'workspace', req.body?.analyticsSessionId));
   });
   app.get('/api/workspaces/:id', async req => service.describe(owned(req)));
   app.delete('/api/workspaces/:id', async req => { access(req); await service.stop(owned(req)); return { ok: true }; });
@@ -20,7 +21,13 @@ export function registerExecution(app, service, auth, cfg, db) {
     if (snapshot.conflict) reply.code(409);
     return snapshot;
   });
-  app.post('/api/challenges/:id/submit', async req => service.grade(access(req).id, req.params.id, req.body?.files));
+  app.post('/api/challenges/:id/submit', async req => {
+    const requestId = req.body?.requestId;
+    if (requestId !== undefined && (typeof requestId !== 'string' || !/^[0-9a-f-]{16,80}$/i.test(requestId))) throw fail(400, 'Invalid request ID');
+    const analyticsSessionId = req.body?.analyticsSessionId;
+    if (analyticsSessionId !== undefined && (typeof analyticsSessionId !== 'string' || !/^[A-Za-z0-9_-]{8,100}$/.test(analyticsSessionId))) throw fail(400, 'Invalid analytics session ID');
+    return service.grade(access(req).id, req.params.id, req.body?.files, requestId, analyticsSessionId);
+  });
   app.post('/api/workspaces/:id/preview', async req => {
     access(req); const session = owned(req);
     const preview = session.previewConfig;

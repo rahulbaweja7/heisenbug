@@ -14,6 +14,7 @@ export function config(env = process.env) {
     dbPath: env.DATABASE_PATH || './data/heisenbug.sqlite',
     template: env.E2B_TEMPLATE || '', apiKey: env.E2B_API_KEY || '',
     clientId: env.GITHUB_CLIENT_ID || '', clientSecret: env.GITHUB_CLIENT_SECRET || '',
+    adminGithubIds: new Set(String(env.ADMIN_GITHUB_IDS || '').split(',').map(value => value.trim()).filter(Boolean)),
     maxSessions: positive('MAX_SANDBOXES', 10),
     idleMs: positive('WORKSPACE_IDLE_MINUTES', 10) * 60000,
     maxMs: positive('WORKSPACE_MAX_MINUTES', 60) * 60000,

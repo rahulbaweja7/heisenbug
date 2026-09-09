@@ -16,7 +16,7 @@ export function registerAuth(app, db, cfg, onLogout = async () => {}) {
   function origin(req) {
     if (req.headers.origin !== cfg.appOrigin) throw fail(403, 'Invalid request origin');
   }
-  app.get('/api/auth/me', async req => ({ user: user(req) || null, executionEnabled: cfg.enabled }));
+  app.get('/api/auth/me', async req => ({ user: user(req) || null, executionEnabled: cfg.enabled, isAdmin: !!(user(req) && cfg.adminGithubIds?.has(String(user(req).id))) }));
   app.get('/api/auth/github', async (req, reply) => {
     if (!cfg.clientId || !cfg.clientSecret) throw fail(503, 'GitHub sign-in is not configured');
     const state = token(), verifier = token();
