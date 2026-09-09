@@ -1,5 +1,4 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
+import { beforeEach, expect, test, vi } from 'vitest';
 
 class Storage {
   values = new Map<string,string>();
@@ -14,29 +13,29 @@ const calls: Array<{ body?: BodyInit | null }> = [];
 Object.defineProperty(globalThis, 'fetch', { value: async (_url:string, options:RequestInit) => { calls.push(options); return new Response('{}'); }, writable:true });
 const analytics = await import('../src/analytics.ts');
 
+beforeEach(() => { storage.clear(); calls.length = 0; vi.restoreAllMocks(); });
 test('analytics defaults off and withdrawal clears identifiers', () => {
-  storage.clear(); calls.length = 0;
-  assert.equal(analytics.analyticsConsent(), false);
+  expect(analytics.analyticsConsent()).toBe(false);
   analytics.track('challenge_view','001-example');
-  assert.equal(calls.length, 0);
+  expect(calls).toHaveLength(0);
   analytics.setAnalyticsConsent(true);
-  assert.equal(analytics.analyticsConsent(), true);
-  assert.ok(analytics.eventSessionId());
-  assert.ok(storage.getItem('heisenbug:visitor'));
+  expect(analytics.analyticsConsent()).toBe(true);
+  expect(analytics.eventSessionId()).toBeTruthy();
+  expect(storage.getItem('heisenbug:visitor')).toBeTruthy();
   analytics.setAnalyticsConsent(false);
-  assert.equal(storage.getItem('heisenbug:visitor'), null);
-  assert.equal(storage.getItem('heisenbug:session'), null);
+  expect(storage.getItem('heisenbug:visitor')).toBeNull();
+  expect(storage.getItem('heisenbug:session')).toBeNull();
 });
 
-test('identifiers expire and duplicate session events are suppressed', async t => {
-  storage.clear(); calls.length = 0; analytics.setAnalyticsConsent(true);
-  let now = 1_800_000_000_000; t.mock.method(Date, 'now', () => now);
+test('identifiers expire and duplicate session events are suppressed', () => {
+  analytics.setAnalyticsConsent(true);
+  let now = 1_800_000_000_000; vi.spyOn(Date, 'now').mockImplementation(() => now);
   const firstSession = analytics.eventSessionId(); const firstVisitor = JSON.parse(storage.getItem('heisenbug:visitor')!).id;
   analytics.track('practice_start','002-example'); analytics.track('practice_start','002-example');
-  assert.equal(calls.length, 1);
+  expect(calls).toHaveLength(1);
   now += 31 * 60_000;
-  assert.notEqual(analytics.eventSessionId(), firstSession);
+  expect(analytics.eventSessionId()).not.toBe(firstSession);
   now += 91 * 86400_000;
   analytics.eventSessionId();
-  assert.notEqual(JSON.parse(storage.getItem('heisenbug:visitor')!).id, firstVisitor);
+  expect(JSON.parse(storage.getItem('heisenbug:visitor')!).id).not.toBe(firstVisitor);
 });
