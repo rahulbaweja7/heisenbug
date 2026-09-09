@@ -1,0 +1,15 @@
+.git
+.github
+**/node_modules
+**/.env
+**/.env.*
+**/data
+**/*.sqlite*
+**/*.db*
+**/dist
+**/coverage
+**/playwright-report
+**/test-results
+**/__pycache__
+**/.pytest_cache
+judge0
