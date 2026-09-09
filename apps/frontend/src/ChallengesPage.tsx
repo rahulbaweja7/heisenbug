@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { API_BASE, type Meta } from "./types";
 import { getSolvedIds } from "./progress";
+import Navbar from "./Navbar";
 import "./ChallengesPage.css";
 
 const DIFFICULTIES = ["all", "easy", "medium", "hard"] as const;
@@ -46,10 +47,9 @@ export default function ChallengesPage() {
       <div className="ch-bg-grid" aria-hidden="true" />
       <div className="ch-glow" aria-hidden="true" />
 
+      <Navbar />
+
       <header className="ch-header">
-        <Link to="/" className="ch-brand">
-          Heisenbug
-        </Link>
         <h1 className="ch-heading">Challenges</h1>
         <p className="ch-subheading">
           Pick a challenge below and start debugging.

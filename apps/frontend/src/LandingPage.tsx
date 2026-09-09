@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { API_BASE, type Meta } from "./types";
+import Navbar from "./Navbar";
 import "./LandingPage.css";
 
 const STEPS = [
@@ -108,6 +109,8 @@ export default function LandingPage() {
     <div className="lp-page">
       <div className="lp-bg-grid" aria-hidden="true" />
       <div className="lp-glow" aria-hidden="true" />
+
+      <Navbar />
 
       <section className="lp-hero">
         <div className="lp-hero-copy">
