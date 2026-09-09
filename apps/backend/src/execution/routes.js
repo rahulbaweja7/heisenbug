@@ -1,5 +1,6 @@
 import { fail } from './config.js';
 import { token, hash } from './store.js';
+import { runSubmission } from '../runner.js';
 export function registerExecution(app, service, auth, cfg, db) {
   const access = req => { auth.origin(req); return auth.requireUser(req); };
   const owned = req => service.owned(req.params.id, auth.requireUser(req).id);

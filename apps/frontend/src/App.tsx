@@ -4,6 +4,7 @@ import ChallengesPage from "./ChallengesPage";
 import ChallengePage from "./ChallengePage";
 import { IdentityProvider } from './IdentityContext';
 import AdminAnalyticsPage from './AdminAnalyticsPage';
+import NotFoundPage from "./NotFoundPage";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/challenges" element={<ChallengesPage />} />
         <Route path="/challenge/:id" element={<ChallengePage />} />
         <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter></IdentityProvider>
   );

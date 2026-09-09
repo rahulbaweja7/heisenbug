@@ -14,7 +14,7 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 
 *(move a task here when you start it — add your name)*
 
-- [ ] Kashyap — Judge0 cloud API spike, test against multi-file pytest format (started 2026-09-01)
+*(nothing currently claimed)*
 
 ---
 
@@ -22,10 +22,11 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 
 ### Content
 - [ ] More multi-layer mini-app challenges beyond the current 10 hard ones
+- [ ] More "web preview" style challenges like CineMatch, now that the E2B workspace supports them
 
 ### Sandboxing / infra
-- [ ] Decide Judge0 vs. custom Docker sandbox based on spike results
-- [ ] Or: try local Judge0 again once there's real disk headroom (15GB+ free)
+- [ ] Provision a real E2B account + `E2B_TEMPLATE` and a GitHub OAuth app, then set `EXECUTION_ENABLED=true` somewhere (staging?) to actually exercise the new sandbox/terminal/preview stack — right now it only runs locally with execution disabled (pytest fallback)
+- [ ] Decide whether the local pytest fallback (PR #15) should stay permanently for the plain-pytest challenges even after E2B is live, or if everything should eventually move to sandboxed grading
 
 ### Product features
 - [ ] Timed mock assessment mode — bundle 3 challenges, 90 min, single score
@@ -34,18 +35,26 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 - [ ] Second language support (Java is the next most common OA language)
 
 ### Deploy
-- [ ] Pick hosting: frontend (Vercel) + backend (Fly.io or small VPS)
-- [ ] Rate limiting on the submit endpoint
-- [ ] Domain name
+- [ ] Pick hosting: needs one persistent stateful backend instance (in-memory PTY sessions + rate limiter, no horizontal scaling support) — Fly.io fits, a serverless split doesn't
+- [ ] Domain name — `APP_ORIGIN`/`API_ORIGIN`/`PREVIEW_ORIGIN` must be same-site under one parent domain for CORS/cookies to work, rules out a naive Vercel+Fly split without subdomains
+- [ ] No backend Dockerfile exists yet (only the E2B *sandbox* template Dockerfile, which can't run the API)
+- [ ] Rate limiting on the submit endpoint (currently one global in-memory limiter, fine at current scale)
 
 ### Polish / bugs
 - [ ] Audit mobile responsiveness across all three pages (landing, /challenges, IDE)
 - [x] Add consented analytics and an administrator progress dashboard
+- [ ] Add basic analytics (attempts/completions per challenge)
+- [ ] CONTRIBUTING.md / issue & PR templates (low urgency while it's just the two of us)
 
 ---
 
 ## Done
 
+- [x] Rahul — completeness audit + Phase 1 polish batch: collapsed the dead Workspace panel on every challenge when execution is disabled, fixed stale README claims, added challenge-search, MIT LICENSE, report-an-issue link, mobile fix for the Workspace preview iframe — PRs #18–#23
+- [x] Rahul — CI pipeline (backend/frontend/cinematch-preview checks) + branch protection requiring it on master — PRs #16, #17
+- [x] Rahul — restored local pytest fallback so /submit works with zero cloud setup (EXECUTION_ENABLED=false path) — PR #15
+- [x] Kashyap — E2B cloud sandbox execution, GitHub OAuth (PKCE) + SQLite sessions, live terminal (xterm) + web preview for full runnable apps, CineMatch (Django movie search) as the first web-preview challenge — PR #14, 48 challenges total now
+- [x] Rahul — settable IDE timer (click to set a custom time limit, 1-180 min) — PR #13
 - [x] Rahul — tier restructure to 10 easy (1 file) / 10 medium (2-3 files) / 10 hard (4-5 files): added 2 new easy, 10 new 2-file medium, 9 new 5-file hard challenges (039–047) alongside challenge-021, each verified broken->red / solution->green — 47 challenges total in the repo now (old single-file mediums kept as bonus content)
 - [x] Rahul — mobile/accessibility audit (touch targets, overflow-wrap safety) — PR #9
 - [x] Rahul — challenges 022–026 (edge-case, off-by-one loop-step, wrong-API, mutable-default class, control-flow) — 26 challenges total now

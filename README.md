@@ -9,9 +9,14 @@ roadmap, monetization, risks).
 
 ## Status
 
-Python debugging challenges run in a Monaco editor with browser drafts. GitHub
-authentication gates E2B terminals, CineMatch web previews, and isolated pytest
-grading. Execution is disabled by default until the service is configured.
+48 Python debugging challenges (10 easy, 26 medium, 12 hard) run in a Monaco
+editor with browser drafts. All but one (challenge-048, "CineMatch," a runnable
+Django app used to exercise the live web-preview feature) follow the same
+folder layout described below. No other languages are supported yet.
+
+GitHub authentication gates E2B terminals and CineMatch's web preview.
+Execution is disabled by default until that service is configured — grading
+still works out of the box via a local, unsandboxed `pytest` run (see below).
 
 ## Structure
 
@@ -38,11 +43,12 @@ challenges/challenge-XXX-slug/
 Requires Node 22.20+. Install dependencies and run `npm run dev` separately in
 `apps/backend` and `apps/frontend`. Browse at `http://localhost:5173`.
 
-Challenge browsing and editing work without execution credentials. Interactive
-terminals, web previews, and grading use isolated E2B sandboxes and require GitHub
-sign-in. There is no local subprocess fallback.
+Everything works out of the box with zero configuration: browsing, editing, and
+grading (Run Tests) all run locally with no GitHub sign-in or E2B account
+needed — grading falls back to a local, unsandboxed `pytest` subprocess when
+`EXECUTION_ENABLED` isn't set. Interactive terminals, live web previews (like
+CineMatch), and isolated E2B-sandboxed grading are an opt-in upgrade on top of
+that, gated behind GitHub sign-in once configured.
 
 See [Interactive execution setup](docs/execution.md) for the environment file,
 GitHub OAuth setup, E2B template build, deployment requirements, and test commands.
-CineMatch includes a runnable movie-search web preview; other Python challenges
-support shell/REPL execution and isolated grading.

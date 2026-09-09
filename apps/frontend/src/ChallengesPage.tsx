@@ -4,6 +4,7 @@ import { API_BASE, type Meta } from "./types";
 import { getSolvedIds } from "./progress";
 import { useIdentity } from './IdentityContext';
 import { analyticsConsent, setAnalyticsConsent } from './analytics';
+import Navbar from "./Navbar";
 import "./ChallengesPage.css";
 
 const DIFFICULTIES = ["all", "easy", "medium", "hard"] as const;
@@ -14,6 +15,7 @@ export default function ChallengesPage() {
   const [loading, setLoading] = useState(true);
   const [difficulty, setDifficulty] = useState<string>("all");
   const [category, setCategory] = useState<string>("all");
+  const [search, setSearch] = useState("");
   const [solvedIds, setSolvedIds] = useState<string[]>([]);
   const [loadError, setLoadError] = useState(false);
   const { identity, progress, progressState, refresh, signOut } = useIdentity();
@@ -51,6 +53,7 @@ export default function ChallengesPage() {
   const filtered = challenges.filter((c) => {
     if (difficulty !== "all" && c.difficulty !== difficulty) return false;
     if (category !== "all" && !c.bugCategories.includes(category)) return false;
+    if (search.trim() && !c.title.toLowerCase().includes(search.trim().toLowerCase())) return false;
     return true;
   });
 
@@ -59,10 +62,9 @@ export default function ChallengesPage() {
       <div className="ch-bg-grid" aria-hidden="true" />
       <div className="ch-glow" aria-hidden="true" />
 
+      <Navbar />
+
       <header className="ch-header">
-        <Link to="/" className="ch-brand">
-          Heisenbug
-        </Link>
         <h1 className="ch-heading">Challenges</h1>
         <p className="ch-subheading">
           Pick a challenge below and start debugging.
@@ -79,6 +81,16 @@ export default function ChallengesPage() {
 
       {identity?.user && eligible.length > 0 && !importHandled && <section className="ch-import" aria-label="Import browser progress" data-decision={importDecision}><strong>Import browser progress</strong><p>Import {eligible.length} browser solve{eligible.length === 1 ? '' : 's'} to @{identity.user.login}. Your browser marks will stay here and imported solves remain labeled until verified.</p><button disabled={importState === 'saving'} onClick={() => void importProgress()}>{importState === 'saving' ? 'Importing…' : 'Import browser progress'}</button><button onClick={() => { localStorage.setItem(importKey, '1'); setImportDecision(value => value + 1); }}>Not now</button>{importState === 'error' && <p role="alert">Import failed. Please try again.</p>}</section>}
       {identity?.user && progressState === 'unavailable' && <div className="ch-state-message" role="alert">Account progress is unavailable. <button onClick={() => void refresh()}>Retry</button></div>}
+      <div className="ch-search-row">
+        <input
+          type="text"
+          className="ch-search-input"
+          placeholder="Search challenges by title..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          aria-label="Search challenges by title"
+        />
+      </div>
 
       <div className="ch-toolbar">
         <div className="ch-filter-group">
@@ -147,6 +159,7 @@ export default function ChallengesPage() {
             onClick={() => {
               setDifficulty("all");
               setCategory("all");
+              setSearch("");
             }}
           >
             Clear filters

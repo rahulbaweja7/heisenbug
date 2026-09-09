@@ -1,0 +1,45 @@
+.nb-nav {
+  position: relative;
+  max-width: 1120px;
+  margin: 0 auto 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #242424;
+}
+
+.nb-brand {
+  font-weight: 700;
+  font-size: 15px;
+  color: #a78bfa;
+  text-decoration: none;
+}
+
+.nb-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.nb-link {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #999;
+  text-decoration: none;
+  padding: 4px 0;
+}
+
+.nb-link:hover {
+  color: #eee;
+}
+
+.nb-link.active {
+  color: #a78bfa;
+}
+
+@media (max-width: 700px) {
+  .nb-links {
+    gap: 16px;
+  }
+}
