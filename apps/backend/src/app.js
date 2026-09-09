@@ -9,6 +9,8 @@ import { registerAuth } from './execution/auth.js';
 import { E2BProvider } from './execution/provider.js';
 import { ExecutionService } from './execution/service.js';
 import { registerExecution } from './execution/routes.js';
+import { registerProgress } from './progress.js';
+import { registerAnalytics } from './analytics.js';
 export async function buildApp(options = {}) {
   const cfg = options.config || config();
   const app = Fastify({ logger: options.logger ?? true, bodyLimit: 1500000, disableRequestLogging: true });
@@ -47,6 +49,8 @@ export async function buildApp(options = {}) {
     for (const session of service.sessions.values()) if (session.userId === userId) await service.stop(session);
   });
   registerExecution(app, service, auth, cfg, db);
+  registerProgress(app, auth, db, cfg);
+  registerAnalytics(app, auth, db, cfg);
   app.decorate('execution', service); app.decorate('store', db); app.decorate('executionConfig', cfg);
   app.addHook('onClose', async () => {
     await Promise.allSettled([...service.sessions.values()].map(s => service.stop(s)));

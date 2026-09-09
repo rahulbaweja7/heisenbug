@@ -1,13 +1,15 @@
 import { forwardRef, lazy, Suspense, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import { API_BASE } from '../types';
-import { api, ApiError, type Files, type Identity, type Snapshot, type Workspace } from './api';
+import { api, ApiError, type Files, type Snapshot, type Workspace } from './api';
+import { useIdentity } from '../IdentityContext';
+import { eventSessionId, track } from '../analytics';
 import { mergeFiles, sameFiles } from './merge';
 const Terminal = lazy(() => import('./Terminal'));
 import './workspace.css';
 export type WorkspaceHandle = { flush: () => Promise<Files> };
 type Props = { challengeId: string; files: Files; setFiles: (files: Files) => void };
 const WorkspacePanel = forwardRef<WorkspaceHandle, Props>(function WorkspacePanel({ challengeId, files, setFiles }, ref) {
-  const [identity, setIdentity] = useState<Identity | null>(null);
+  const { identity, signOut } = useIdentity();
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -65,11 +67,8 @@ const WorkspacePanel = forwardRef<WorkspaceHandle, Props>(function WorkspacePane
   useImperativeHandle(ref, () => ({ flush: () => operations.current.synchronize(true) }), []);
   useEffect(() => {
     mounted.current = true;
-    api<Identity>('/api/auth/me').then(async found => {
-      if (!mounted.current) return;
-      setIdentity(found);
-      if (found.user) {
-        const existing = await api<{ workspaces: Workspace[] }>('/api/workspaces');
+    if (identity?.user) api<{ workspaces: Workspace[] }>('/api/workspaces').then(existing => {
+      if (mounted.current) {
         const match = existing.workspaces.find(item => item.challengeId === challengeId);
         if (match && mounted.current) {
           live.current = match; base.current = { files: current.current, revision: match.revision };
@@ -80,7 +79,8 @@ const WorkspacePanel = forwardRef<WorkspaceHandle, Props>(function WorkspacePane
       }
     }).catch(e => { if (mounted.current) setError(e.message); });
     return () => { mounted.current = false; };
-  }, [challengeId]);
+  }, [challengeId, identity?.user?.id]);
+  useEffect(() => { if (!identity?.user) { live.current = null; base.current = null; conflictRef.current = []; setConflicts([]); setWorkspace(null); setPreview(''); } }, [identity?.user?.id]);
   useEffect(() => {
     if (!workspace) return;
     const timeout = setTimeout(() => operations.current.synchronize().catch(e => setError(e.message)), 600);
@@ -94,7 +94,8 @@ const WorkspacePanel = forwardRef<WorkspaceHandle, Props>(function WorkspacePane
   async function start() {
     setBusy(true); setError('');
     try {
-      const session = await api<Workspace>('/api/workspaces', { method: 'POST', body: JSON.stringify({ challengeId, files: current.current }) });
+      track('practice_start', challengeId);
+      const session = await api<Workspace>('/api/workspaces', { method: 'POST', body: JSON.stringify({ challengeId, files: current.current, analyticsSessionId: eventSessionId() }) });
       base.current = session; live.current = session; setWorkspace(session); setSaveStatus('Saved to workspace');
     } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   }
@@ -129,7 +130,7 @@ const WorkspacePanel = forwardRef<WorkspaceHandle, Props>(function WorkspacePane
   return <section className="ws-panel" aria-label="Code execution">
     <div className="ws-toolbar">
       <strong>Workspace</strong>
-      {identity?.user ? <><span>@{identity.user.login}</span><button disabled={busy} onClick={async () => { try { if (workspace) await stop(); await api('/api/auth/logout', { method: 'POST' }); setIdentity({ ...identity, user: null }); } catch (e) { setError((e as Error).message); } }}>Sign out</button></> : <a href={`${API_BASE}/api/auth/github?returnTo=${encodeURIComponent(`/challenge/${challengeId}`)}`}>Sign in with GitHub</a>}
+      {identity?.user ? <><span>@{identity.user.login}</span><button disabled={busy} onClick={async () => { try { if (workspace) await stop(); await signOut(); } catch (e) { setError((e as Error).message); } }}>Sign out</button></> : <a href={`${API_BASE}/api/auth/github?returnTo=${encodeURIComponent(`/challenge/${challengeId}`)}`}>Sign in with GitHub</a>}
       {workspace ? <button disabled={busy} onClick={stop}>Stop workspace</button> : <button disabled={busy || !identity?.user || !identity.executionEnabled} onClick={start}>{busy ? 'Starting…' : 'Start workspace'}</button>}
       <span className="ws-save" role="status">{saveStatus}</span>
     </div>

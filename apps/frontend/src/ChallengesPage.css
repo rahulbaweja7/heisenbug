@@ -310,3 +310,4 @@
     display: none;
   }
 }
+.ch-account,.ch-analytics-choice,.ch-import{display:flex;gap:.75rem;align-items:center;justify-content:center;flex-wrap:wrap}.ch-account{margin-top:1rem}.ch-analytics-choice{margin-top:.75rem;font-size:.875rem}.ch-import{max-width:760px;margin:1rem auto;padding:1rem;border:1px solid rgba(139,92,246,.45);border-radius:10px;background:rgba(20,18,35,.85)}.ch-import p{margin:0;flex-basis:100%}@media(max-width:640px){.ch-import{margin:1rem}.ch-account,.ch-analytics-choice{padding:0 1rem}}

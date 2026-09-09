@@ -13,4 +13,4 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
 export type Files = Record<string, string>;
 export type Snapshot = { files: Files; revision: string };
 export type Workspace = Snapshot & { id: string; challengeId: string; deadline: number; previewAvailable: boolean };
-export type Identity = { user: { id: string; login: string } | null; executionEnabled: boolean };
+export type Identity = { user: { id: string; login: string } | null; executionEnabled: boolean; isAdmin?: boolean };

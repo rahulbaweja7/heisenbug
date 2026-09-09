@@ -3,6 +3,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { getChallenge, challengeDir } from '../challenges.js';
 import { fail, validateFiles } from './config.js';
+import { recordVerified } from '../progress.js';
 export class ExecutionService {
   constructor(db, cfg, provider, logger) {
     Object.assign(this, { db, cfg, provider, logger });
@@ -32,10 +33,10 @@ export class ExecutionService {
     this.pending.add(key); this.active++;
     return () => { this.pending.delete(key); this.active--; };
   }
-  async create(userId, challengeId, files, kind = 'workspace') {
+  async create(userId, challengeId, files, kind = 'workspace', analyticsSessionId = null, prepared = null) {
     validateFiles(files);
-    const challenge = await getChallenge(challengeId).catch(() => { throw fail(404, 'Challenge not found'); });
-    const release = this.reserve(userId, kind);
+    const challenge = prepared?.challenge || await getChallenge(challengeId).catch(() => { throw fail(404, 'Challenge not found'); });
+    const release = prepared?.release || this.reserve(userId, kind);
     const now = Date.now(), id = randomUUID();
     const deadline = now + Math.min(kind === 'grading' ? 30000 : this.cfg.maxMs, this.cfg.dailyMs - this.usage(userId));
     this.db.prepare('INSERT INTO workspaces VALUES (?,?,?,?,?,?,?)').run(id, userId, null, kind, now, null, deadline);
@@ -56,6 +57,7 @@ export class ExecutionService {
           }
         });
         session.pty.wait().then(() => { for (const ws of session.sockets) ws.close(1000, 'Shell exited; restart workspace'); }).catch(() => { for (const ws of session.sockets) ws.close(1011, 'Terminal disconnected'); });
+        this.db.prepare('INSERT OR IGNORE INTO workspace_starts(workspace_id,user_id,challenge_id,session_id,started_at,successful) VALUES (?,?,?,?,?,1)').run(id, userId, challengeId, analyticsSessionId, now);
       }
       session.previewConfig = challenge.meta.workspace;
       this.logger.info({ workspaceId: id, kind, startupMs: Date.now() - now }, 'Sandbox started');
@@ -118,10 +120,24 @@ export class ExecutionService {
     }
     this.db.prepare('DELETE FROM tickets WHERE expires<?').run(Date.now());
     this.db.prepare('DELETE FROM logins WHERE expires<?').run(Date.now());
+    this.db.prepare('DELETE FROM analytics_events WHERE received_at<?').run(Date.now() - 90 * 86400000);
   }
-  async grade(userId, challengeId, files) {
-    const session = await this.create(userId, challengeId, files, 'grading');
+  async grade(userId, challengeId, files, requestId = randomUUID(), analyticsSessionId = null) {
+    const findExisting = () => this.db.prepare('SELECT id,request_id,challenge_id,outcome,completed_at FROM submissions WHERE user_id=? AND request_id=?').get(userId, requestId);
+    const summarize = existing => { if (existing.challenge_id !== challengeId) throw fail(409, 'Request ID already belongs to another challenge'); return { passed: existing.outcome === 'passed', outcome: existing.outcome, submissionId: existing.id, completedAt: existing.completed_at, pending: existing.outcome === 'pending' }; };
+    const existing = findExisting();
+    if (existing) return summarize(existing);
+    validateFiles(files);
+    const challenge = await getChallenge(challengeId).catch(() => { throw fail(404, 'Challenge not found'); });
+    const raced = findExisting();
+    if (raced) return summarize(raced);
+    const release = this.reserve(userId, 'grading');
+    const submissionId = randomUUID(), createdAt = Date.now();
+    try { this.db.prepare('INSERT INTO submissions(id,request_id,user_id,challenge_id,session_id,created_at,outcome) VALUES (?,?,?,?,?,?,?)').run(submissionId, requestId, userId, challengeId, analyticsSessionId, createdAt, 'pending'); }
+    catch (error) { release(); throw error; }
+    let session;
     try {
+      session = await this.create(userId, challengeId, files, 'grading', analyticsSessionId, { challenge, release });
       const tests = [];
       async function readTests(dir, prefix = '') {
         for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -131,7 +147,19 @@ export class ExecutionService {
         }
       }
       await readTests(path.join(challengeDir(challengeId), 'tests'));
-      return await this.provider.grade(session.sandbox, files, tests);
-    } finally { await this.stop(session); }
+      const result = await this.provider.grade(session.sandbox, files, tests);
+      const outcome = result.passed ? 'passed' : 'failed', completedAt = Date.now();
+      this.db.exec('BEGIN');
+      try {
+        this.db.prepare("UPDATE submissions SET outcome=?,completed_at=? WHERE id=? AND outcome='pending'").run(outcome, completedAt, submissionId);
+        if (result.passed) recordVerified(this.db, userId, challengeId, completedAt);
+        this.db.exec('COMMIT');
+      } catch (error) { this.db.exec('ROLLBACK'); throw fail(503, 'Grading completed but result could not be saved'); }
+      return { ...result, outcome, submissionId, completedAt };
+    } catch (error) {
+      if (error.statusCode === 503 && /could not be saved/.test(error.message)) throw error;
+      this.db.prepare("UPDATE submissions SET outcome='infrastructure_error',completed_at=? WHERE id=?").run(Date.now(), submissionId);
+      throw error;
+    } finally { if (session) await this.stop(session).catch(error => this.logger.error({ err: error }, 'Grading cleanup failed')); }
   }
 }

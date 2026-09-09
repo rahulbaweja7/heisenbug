@@ -29,8 +29,8 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 - [ ] Decide whether the local pytest fallback (PR #15) should stay permanently for the plain-pytest challenges even after E2B is live, or if everything should eventually move to sandboxed grading
 
 ### Product features
-- [ ] Timed mock assessment mode — bundle N challenges, one timer, single score at the end (biggest remaining product gap)
-- [ ] Register a real GitHub OAuth app (doesn't need E2B — `/api/auth/github` only checks `clientId`/`clientSecret`, not `EXECUTION_ENABLED`) and migrate solved/progress tracking off localStorage onto it
+- [ ] Timed mock assessment mode — bundle 3 challenges, 90 min, single score
+- [x] Auth (GitHub OAuth) + account progress with explicit browser-progress import
 - [ ] Difficulty calibration from real usage data (once there are users)
 - [ ] Second language support (Java is the next most common OA language)
 
@@ -41,6 +41,8 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 - [ ] Rate limiting on the submit endpoint (currently one global in-memory limiter, fine at current scale)
 
 ### Polish / bugs
+- [ ] Audit mobile responsiveness across all three pages (landing, /challenges, IDE)
+- [x] Add consented analytics and an administrator progress dashboard
 - [ ] Add basic analytics (attempts/completions per challenge)
 - [ ] CONTRIBUTING.md / issue & PR templates (low urgency while it's just the two of us)
 

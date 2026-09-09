@@ -8,6 +8,8 @@ import { markSolved } from "./progress";
 import "./ChallengePage.css";
 import WorkspacePanel, { type WorkspaceHandle } from './workspace/WorkspacePanel';
 import { api } from './workspace/api';
+import { eventSessionId, track } from './analytics';
+import { useIdentity } from './IdentityContext';
 import Modal from './Modal';
 
 export default function ChallengePage() {
@@ -20,6 +22,8 @@ export default function ChallengePage() {
   const [running, setRunning] = useState(false);
   const [executionError, setExecutionError] = useState('');
   const workspace = useRef<WorkspaceHandle>(null);
+  const submissionRequest = useRef<string | null>(null);
+  const { refresh } = useIdentity();
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [editingTimer, setEditingTimer] = useState(false);
   const [timerInput, setTimerInput] = useState("");
@@ -57,6 +61,7 @@ export default function ChallengePage() {
         setFileContents(files);
         setActiveFile(Object.keys(files)[0] || null);
         setSecondsLeft(c.meta.timeLimitMinutes * 60);
+        track('challenge_view', c.meta.id);
       })
       .catch(() => setLoadError(true));
   }, [id]);
@@ -100,8 +105,13 @@ export default function ChallengePage() {
     setResult(null);
     setExecutionError('');
     try {
+      track('practice_start', challenge.meta.id);
       const files = await workspace.current?.flush() || fileContents;
-      setResult(await api<SubmitResult>(`/api/challenges/${challenge.meta.id}/submit`, { method: 'POST', body: JSON.stringify({ files }) }));
+      submissionRequest.current ||= crypto.randomUUID();
+      const response = await api<SubmitResult>(`/api/challenges/${challenge.meta.id}/submit`, { method: 'POST', body: JSON.stringify({ files, requestId: submissionRequest.current, analyticsSessionId: eventSessionId() }) });
+      submissionRequest.current = null;
+      setResult(response);
+      await refresh();
     } catch (error) {
       setExecutionError((error as Error).message);
     } finally {
@@ -327,9 +337,7 @@ export default function ChallengePage() {
               language={activeFile.endsWith('.html') ? 'html' : activeFile.endsWith('.md') ? 'markdown' : challenge.meta.language}
               path={`${challenge.meta.id}/${activeFile}`}
               value={fileContents[activeFile]}
-              onChange={(value) =>
-                setFileContents((prev) => ({ ...prev, [activeFile]: value ?? "" }))
-              }
+              onChange={(value) => { track('practice_start', challenge.meta.id); setFileContents((prev) => ({ ...prev, [activeFile]: value ?? "" })); }}
               theme="vs-dark"
               options={{ minimap: { enabled: false }, fontSize: 13 }}
             /> : <p className="ws-empty">Create a file to begin editing.</p>}
