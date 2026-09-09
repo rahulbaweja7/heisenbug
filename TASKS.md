@@ -29,7 +29,7 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 
 ### Product features
 - [ ] Timed mock assessment mode — bundle 3 challenges, 90 min, single score
-- [ ] Auth (GitHub OAuth) + migrate progress off localStorage
+- [x] Auth (GitHub OAuth) + account progress with explicit browser-progress import
 - [ ] Difficulty calibration from real usage data (once there are users)
 - [ ] Second language support (Java is the next most common OA language)
 
@@ -40,7 +40,7 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 
 ### Polish / bugs
 - [ ] Audit mobile responsiveness across all three pages (landing, /challenges, IDE)
-- [ ] Add basic analytics (attempts/completions per challenge)
+- [x] Add consented analytics and an administrator progress dashboard
 
 ---
 

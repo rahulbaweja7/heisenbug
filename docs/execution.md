@@ -30,6 +30,32 @@ with `npm ci` in `apps/backend` and `apps/frontend`.
    workspace. Use the hostname `localhost`, matching `APP_ORIGIN`, rather than
    substituting `127.0.0.1`.
 
+To grant analytics dashboard access, set `ADMIN_GITHUB_IDS` to a comma-separated
+list of stable numeric GitHub user IDs. An empty value denies access to everyone.
+Authorized users can open `/admin/analytics`; the backend enforces the allowlist.
+
+## Progress and analytics
+
+Signed-in progress is stored in SQLite and includes completed attempt counts,
+imported browser solves, and server-verified solves. Browser drafts and guest solve
+marks stay in local storage. Import is always an explicit choice, keeps local marks,
+and never counts as a verified completion. Submission request UUIDs make retries
+idempotent without storing candidate code or test output.
+
+Optional browser analytics defaults to off. Accepting creates a visitor identifier
+that expires after 90 days and a session identifier that rotates after 30 minutes
+of inactivity. Withdrawing consent deletes both identifiers and stops future view
+and practice-start events. The server stores receipt times and minimal identifiers,
+prunes browser events after 90 days, and does not store IP addresses, URLs,
+referrers, editor contents, or terminal contents in analytics records.
+
+Dashboard browser-funnel metrics cover consented activity. Returning visitors have
+an earlier tracked session in retained history. Tracked conversion is the share of
+viewed challenge/session pairs followed by a completed submission for that same
+challenge and session. Pass rate is passing submissions divided by completed
+submissions. All-account grading totals are shown separately, and imported solves
+never contribute to verified completion metrics.
+
 The preview gateway listens on port 4002. Each workspace gets its own
 `<workspace-id>.localhost:4002` hostname. A browser that resolves `*.localhost` to
 loopback is required for local preview verification.
