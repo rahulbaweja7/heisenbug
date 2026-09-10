@@ -193,8 +193,8 @@ Create a Heisenbug project and production environment on the local server.
 
 #### 2. Package the backend and challenges
 
-The checked-in `apps/backend/Dockerfile` uses the following configuration. Pin
-its maintained Node 22 image to a reviewed digest before production; it must be
+The checked-in `apps/backend/Dockerfile` uses the following configuration. Its
+maintained Node 22 base image is pinned to a reviewed digest and must remain
 22.20+.
 This is different from `apps/backend/sandbox/Dockerfile`, which builds the E2B
 Python runtime and must not be used as the API image.
@@ -422,7 +422,7 @@ This lets frontend-only PRs complete their checks without deploying the backend.
 1. PRs run checks with read-only permissions and no deployment credentials.
 2. On a default-branch push with backend changes, publish only after
    `ci-required` succeeds. Checkout
-   that run's `github.sha`, build the root-context Dockerfile, and push
+   that run's `github.sha`, build the root-context `apps/backend/Dockerfile`, and push
    `ghcr.io/OWNER/REPOSITORY-backend:<full-sha>`. Use `GITHUB_TOKEN` with
    `packages: write` only in the publishing job. Match the image architecture to
    the VM. Record the image digest; do not overwrite existing SHA tags on reruns.
@@ -466,12 +466,14 @@ curl --fail --silent --show-error --max-time 30 \
   -H "Authorization: Bearer $COOLIFY_TOKEN" --output deployment.json
 ```
 
-This is an API-call skeleton, not a complete runnable deployment script. Add the
-stop-status poll before connecting it to CI. Use `GET /api/v1/applications/{uuid}`
-to inspect status, then poll the returned deployment UUID with
-`GET /api/v1/deployments/{deployment_uuid}` until finished or failed. Verify the
-status values returned by the installed Coolify version and fail on unknown
-states. Bound the whole operation to ten minutes. A webhook HTTP 200 means the
+This is an API-call outline. The runnable implementation is
+`scripts/deploy-backend.sh`; it uses `GET /api/v1/applications/{uuid}` to inspect status, then polls the returned
+deployment UUID with `GET /api/v1/deployments/{deployment_uuid}` until finished
+or failed. Coolify v4 application responses may report composite lifecycle/
+health values such as `running:healthy` or `exited:unhealthy`;
+`scripts/deploy-backend.sh` validates the lifecycle component and fails on
+unknown states. Confirm the installed Coolify version's exact values during
+setup. Bound the whole operation to ten minutes. A webhook HTTP 200 means the
 job was accepted, not that the new version is healthy.
 
 The [application update API](https://coolify.io/docs/api-reference/api/applications/update-application-by-uuid)
@@ -562,6 +564,12 @@ With a configured E2B template, run from `apps/backend`:
 ```powershell
 node --env-file=.env scripts/smoke-e2b.js
 ```
+
+The live smoke creates the interactive workspace through the API, checks that
+server-held `tests/` files are absent from its file snapshot, submits through
+the API into a separate grading sandbox, and exercises network, permission,
+output, timeout, and cleanup behavior. Cleanup failures are reported after all
+known sandboxes have been attempted.
 
 Then verify GitHub login in a browser, Python REPL input, Ctrl+C, resizing,
 reconnection, terminal/editor edits and conflicts, CineMatch preview and restart,

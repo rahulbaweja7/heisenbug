@@ -87,7 +87,10 @@ node --env-file=.env scripts/smoke-e2b.js
 
 The CineMatch preview check is run from the repository root with
 `python scripts/test-cinematch-preview.py`. Linux-only workspace file coverage
-can be run with `python3 apps/backend/test/workspace-files.test.py`.
+can be run with `python3 apps/backend/test/workspace-files.test.py`. Build the
+challenge runner with `docker build -f scripts/challenge-runner.Dockerfile -t
+heisenbug-challenge-runner:ci .` before running `python scripts/test-challenges.py`;
+use `--runner local` only for local debugging.
 
 ## Commit protocol
 
@@ -128,6 +131,19 @@ than editing a previous entry. Keep this section as a concise audit trail; do
 not record secrets, tokens, personal data, or full command output.
 
 ### Change log
+
+- 2026-09-09 — Agent: Restored the challenge metadata/path/preview contract
+  validation, fixed Docker pytest command ordering, and made Coolify digest
+  extraction pipefail-safe. Validation: staged backend 18/18 and all 48 local
+  challenge contracts passed; Docker and the installed Coolify response were
+  unavailable for live validation.
+
+- 2026-09-09 — Agent: Moved the deployment-blocker fixes onto a clean branch
+  based on current `origin/master`; removed host submission fallback, added
+  isolated challenge execution, bounded preview shutdown, validated Coolify
+  composite statuses, and hardened CI/E2B cleanup and permissions. Validation:
+  backend/frontend tests, Python local contract checks, YAML, shell, syntax, and
+  diff checks passed; Docker, live E2B, and live Coolify remained unavailable.
 
 - 2026-09-09 — Agent: Added compatibility CI jobs for the repository's legacy
   required check names so contributors without settings access can satisfy

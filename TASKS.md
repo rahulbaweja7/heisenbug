@@ -52,7 +52,7 @@ Shared by Rahul & Kashyap. Update this file directly and commit/push your change
 
 - [x] Rahul — completeness audit + Phase 1 polish batch: collapsed the dead Workspace panel on every challenge when execution is disabled, fixed stale README claims, added challenge-search, MIT LICENSE, report-an-issue link, mobile fix for the Workspace preview iframe — PRs #18–#23
 - [x] Rahul — CI pipeline (backend/frontend/cinematch-preview checks) + branch protection requiring it on master — PRs #16, #17
-- [x] Rahul — restored local pytest fallback so /submit works with zero cloud setup (EXECUTION_ENABLED=false path) — PR #15
+- [x] Rahul — restored local pytest fallback so /submit works with zero cloud setup (EXECUTION_ENABLED=false path) — PR #15; superseded by the E2B-only execution policy
 - [x] Kashyap — E2B cloud sandbox execution, GitHub OAuth (PKCE) + SQLite sessions, live terminal (xterm) + web preview for full runnable apps, CineMatch (Django movie search) as the first web-preview challenge — PR #14, 48 challenges total now
 - [x] Rahul — settable IDE timer (click to set a custom time limit, 1-180 min) — PR #13
 - [x] Rahul — tier restructure to 10 easy (1 file) / 10 medium (2-3 files) / 10 hard (4-5 files): added 2 new easy, 10 new 2-file medium, 9 new 5-file hard challenges (039–047) alongside challenge-021, each verified broken->red / solution->green — 47 challenges total in the repo now (old single-file mediums kept as bonus content)
