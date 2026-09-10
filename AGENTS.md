@@ -129,6 +129,9 @@ not record secrets, tokens, personal data, or full command output.
 
 ### Change log
 
+- 2026-09-09 — Agent: Corrected the Playwright web-server launcher's Git
+  executable mode so browser CI can start it. Validation: shell syntax and
+  Playwright test discovery passed.
 - 2026-09-09 — Agent: Added challenge contracts, frontend component and browser
   tests, fork-safe CI, trusted E2B smoke checks, VM/Coolify packaging, and gated
   GHCR deployment with revision verification. Validation: backend 17/17,
