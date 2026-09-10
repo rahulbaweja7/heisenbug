@@ -1,7 +1,7 @@
 # Comprehensive testing and GitHub CI plan
 
-Date: 2026-09-09. Status: proposed implementation plan; the suites and workflows
-below are not yet implemented unless explicitly listed as existing.
+Date: 2026-09-09. Status: implemented baseline; the remaining items below are
+follow-up coverage and operational checks.
 
 ## Goals and baseline
 
@@ -19,12 +19,14 @@ Repository inspection found:
   migrations, and analytics. Extend these assertions rather than duplicate them.
 - Frontend: `node:test` with three merge tests and two analytics tests. No
   component or browser suite; production build and oxlint scripts exist.
-- Python: Linux file-bridge tests and a CineMatch adapter check already exist.
-  Each challenge has server-held tests and a reference solution, but there is no
-  repository-wide contract runner.
-- Live provider: `apps/backend/scripts/smoke-e2b.js` checks files, PTY, runtime
-  permissions, and grading. It is a provider smoke test, not a full API journey.
-- No existing `.github` workflows. Two independent app lockfiles; no root npm
+- Python: Linux file-bridge tests, a CineMatch adapter check, and a repository-wide
+  challenge contract runner exist. The contract runner uses the constrained
+  Docker image in CI; each challenge has server-held tests and a reference solution.
+- Live provider: `apps/backend/scripts/smoke-e2b.js` checks the API workspace and
+  grading journey, hidden-test exclusion, files, PTY, runtime permissions, and
+  cleanup. It requires configured E2B credentials and a built template.
+- `.github/workflows/ci.yml` runs the required suites and gated deployment; the
+  trusted E2B workflow is separate. Two independent app lockfiles; no root npm
   project. Use Node 22.20+ and a Python version matching the E2B template.
 
 This baseline is based on source inspection, not a fresh test run. Earlier audit
@@ -144,20 +146,20 @@ filters that leave required checks pending. Use Ubuntu 24.04, read-only
 `contents` permissions, per-ref concurrency with cancellation of superseded
 runs, job timeouts, and independent jobs:
 
-| Job/check | Work and proposed timeout |
+| Job/check | Work and timeout |
 | --- | --- |
 | `backend-tests` | Backend `npm ci`, unit/integration/security tests and coverage; 10 minutes. |
 | `frontend-checks` | Frontend `npm ci`, tests/coverage, `npm run lint`, `npm run build`; 10 minutes. |
-| `python-contracts` | Linux file bridge, isolated CineMatch checks and all challenge contracts; 15 minutes. |
+| `python-contracts` | Linux file bridge, isolated CineMatch checks, and all challenge contracts in the non-root, no-network Docker runner; 15 minutes. |
 | `browser-tests` | Install both apps, build frontend, install Chromium with OS dependencies, start test harness, run Playwright; 15 minutes. |
 | `ci-required` | Always-run aggregate depending on all four jobs; fails if any required job fails, is cancelled, or is unexpectedly skipped. |
 
 Use per-app working directories and lockfile-keyed npm download caches; never
 cache `node_modules`. Pin reviewed actions to immutable commit SHAs, with a
-version comment and an automated dependency-update policy. The proposed new
-commands are `npm run test:coverage` in each app and `npm run test:e2e` in the
-frontend; implement them before workflows reference them. Python checks run from
-the repository root. Validate workflow YAML with actionlint.
+version comment and an automated dependency-update policy. The commands are
+`npm run test:coverage` in each app and `npm run test:e2e` in the frontend.
+Python checks run from the repository root. Validate workflow YAML with
+actionlint.
 
 Upload coverage and challenge summaries, plus browser traces/screenshots on
 failure, with seven-day retention. Do not upload databases, cookies, tokens,
