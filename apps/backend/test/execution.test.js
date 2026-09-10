@@ -119,6 +119,19 @@ test('authentication, origin checks and feature flag precede sandbox allocation'
   assert.equal((await request('POST', '/api/workspaces', { challengeId, files })).statusCode, 503);
   assert.equal(provider.created.length, 0);
 });
+test('disabled submissions return 503 after origin validation without side effects', async t => {
+  const { app, cfg, provider, request } = await setup(t, { enabled: false });
+  const hostileFiles = { '../outside.py': 'raise SystemExit(1)' };
+  const anonymous = await app.inject({ method: 'POST', url: `/api/challenges/${challengeId}/submit`, payload: { files: hostileFiles }, headers: { origin: cfg.appOrigin } });
+  const authenticated = await request('POST', `/api/challenges/${challengeId}/submit`, { files: hostileFiles });
+  const hostileOrigin = await request('POST', `/api/challenges/${challengeId}/submit`, { files }, 'one', 'https://evil.invalid');
+  assert.equal(anonymous.statusCode, 503);
+  assert.equal(authenticated.statusCode, 503);
+  assert.equal(hostileOrigin.statusCode, 403);
+  assert.equal(provider.created.length, 0);
+  assert.equal(app.store.prepare('SELECT COUNT(*) AS n FROM submissions').get().n, 0);
+  assert.equal(app.store.prepare('SELECT COUNT(*) AS n FROM progress').get().n, 0);
+});
 test('workspace ownership, revision conflicts, terminal changes and cleanup', async t => {
   const { request, provider } = await setup(t);
   const created = await request('POST', '/api/workspaces', { challengeId, files });

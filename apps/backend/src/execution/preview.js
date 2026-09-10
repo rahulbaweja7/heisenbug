@@ -5,6 +5,7 @@ export function previewServer(service, db, cfg, createProxy = options => httpPro
   const base = new URL(cfg.previewOrigin);
   if (base.origin === new URL(cfg.appOrigin).origin || base.origin === new URL(cfg.apiOrigin).origin) throw new Error('Preview must use a separate origin');
   const proxy = createProxy({ changeOrigin: true, ws: true, proxyTimeout: 15000, timeout: 15000, secure: true });
+  const connections = new Set();
   const cookie = req => /(?:^|;\s*)hb_preview=([^;]+)/.exec(req.headers.cookie || '')?.[1];
   function sessionFor(req, credential) {
     if (!credential) throw new Error('Preview access expired');
@@ -53,6 +54,10 @@ export function previewServer(service, db, cfg, createProxy = options => httpPro
       res.writeHead(403, { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' }); res.end('Preview expired. Reopen Preview from your workspace.');
     }
   });
+  server.on('connection', socket => {
+    connections.add(socket);
+    socket.once('close', () => connections.delete(socket));
+  });
   server.on('upgrade', (req, socket, head) => {
     try {
       const session = sessionFor(req, cookie(req));
@@ -61,5 +66,9 @@ export function previewServer(service, db, cfg, createProxy = options => httpPro
     } catch { socket.destroy(); }
   });
   server.on('close', () => proxy.close());
+  server.destroyConnections = () => {
+    for (const socket of connections) socket.destroy();
+    connections.clear();
+  };
   return server;
 }

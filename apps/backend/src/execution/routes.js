@@ -1,8 +1,12 @@
 import { fail } from './config.js';
 import { token, hash } from './store.js';
-import { runSubmission } from '../runner.js';
 export function registerExecution(app, service, auth, cfg, db) {
   const access = req => { auth.origin(req); return auth.requireUser(req); };
+  const submitAccess = req => {
+    auth.origin(req);
+    if (!cfg.enabled) throw fail(503, 'Code execution is disabled');
+    return auth.requireUser(req);
+  };
   const owned = req => service.owned(req.params.id, auth.requireUser(req).id);
   app.get('/api/workspaces', async req => {
     const user = auth.requireUser(req);
@@ -22,21 +26,13 @@ export function registerExecution(app, service, auth, cfg, db) {
     if (snapshot.conflict) reply.code(409);
     return snapshot;
   });
-  // With no E2B key / EXECUTION_ENABLED=false, grade locally and unauthenticated
-  // so the pytest-based challenge library works with zero cloud setup. Local
-  // submissions don't participate in the requestId/submissions/progress
-  // tracking below -- that's inherent to being unauthenticated, not a bug.
-  app.post('/api/challenges/:id/submit', async (req, reply) => {
-    if (!cfg.enabled) {
-      const { files } = req.body ?? {};
-      if (!files || typeof files !== 'object') { reply.code(400); return { error: 'expected { files: { [path]: contents } }' }; }
-      return runSubmission(req.params.id, files);
-    }
+  app.post('/api/challenges/:id/submit', async req => {
+    const user = submitAccess(req);
     const requestId = req.body?.requestId;
     if (requestId !== undefined && (typeof requestId !== 'string' || !/^[0-9a-f-]{16,80}$/i.test(requestId))) throw fail(400, 'Invalid request ID');
     const analyticsSessionId = req.body?.analyticsSessionId;
     if (analyticsSessionId !== undefined && (typeof analyticsSessionId !== 'string' || !/^[A-Za-z0-9_-]{8,100}$/.test(analyticsSessionId))) throw fail(400, 'Invalid analytics session ID');
-    return service.grade(access(req).id, req.params.id, req.body?.files, requestId, analyticsSessionId);
+    return service.grade(user.id, req.params.id, req.body?.files, requestId, analyticsSessionId);
   });
   app.post('/api/workspaces/:id/preview', async req => {
     access(req); const session = owned(req);
