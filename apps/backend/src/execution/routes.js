@@ -22,7 +22,16 @@ export function registerExecution(app, service, auth, cfg, db) {
     if (snapshot.conflict) reply.code(409);
     return snapshot;
   });
-  app.post('/api/challenges/:id/submit', async req => {
+  // With no E2B key / EXECUTION_ENABLED=false, grade locally and unauthenticated
+  // so the pytest-based challenge library works with zero cloud setup. Local
+  // submissions don't participate in the requestId/submissions/progress
+  // tracking below -- that's inherent to being unauthenticated, not a bug.
+  app.post('/api/challenges/:id/submit', async (req, reply) => {
+    if (!cfg.enabled) {
+      const { files } = req.body ?? {};
+      if (!files || typeof files !== 'object') { reply.code(400); return { error: 'expected { files: { [path]: contents } }' }; }
+      return runSubmission(req.params.id, files);
+    }
     const requestId = req.body?.requestId;
     if (requestId !== undefined && (typeof requestId !== 'string' || !/^[0-9a-f-]{16,80}$/i.test(requestId))) throw fail(400, 'Invalid request ID');
     const analyticsSessionId = req.body?.analyticsSessionId;
