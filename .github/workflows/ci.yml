@@ -116,6 +116,33 @@ jobs:
           done
           jq -e --arg revision "$GITHUB_SHA" '.ok == true and .executionEnabled == false and .revision == $revision' health.json
           curl --fail --silent http://127.0.0.1:4001/api/challenges | jq -e 'type == "array" and length > 0'
+  legacy-backend-check:
+    name: backend
+    if: always()
+    needs: backend-tests
+    runs-on: ubuntu-24.04
+    steps:
+      - env:
+          RESULT: ${{ needs.backend-tests.result }}
+        run: test "$RESULT" = success
+  legacy-frontend-check:
+    name: frontend
+    if: always()
+    needs: frontend-checks
+    runs-on: ubuntu-24.04
+    steps:
+      - env:
+          RESULT: ${{ needs.frontend-checks.result }}
+        run: test "$RESULT" = success
+  legacy-cinematch-check:
+    name: cinematch-preview
+    if: always()
+    needs: python-contracts
+    runs-on: ubuntu-24.04
+    steps:
+      - env:
+          RESULT: ${{ needs.python-contracts.result }}
+        run: test "$RESULT" = success
   ci-required:
     if: always()
     needs: [backend-tests, frontend-checks, python-contracts, browser-tests, backend-image]

@@ -129,6 +129,9 @@ not record secrets, tokens, personal data, or full command output.
 
 ### Change log
 
+- 2026-09-09 — Agent: Added compatibility CI jobs for the repository's legacy
+  required check names so contributors without settings access can satisfy
+  branch protection. Validation: workflow YAML parsing and diff checks passed.
 - 2026-09-09 — Agent: Fixed the Playwright user-isolation request by giving the
   guest context the configured frontend origin before calling the API.
   Validation: four of five GitHub browser journeys passed before the fix; local
