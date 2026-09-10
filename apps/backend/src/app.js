@@ -36,7 +36,7 @@ export async function buildApp(options = {}) {
     if (status >= 500) req.log.error({ err }, 'Request failed');
     reply.code(status).send({ error: status >= 500 && !err.statusCode ? 'Execution service unavailable; please retry.' : err.message });
   });
-  app.get('/api/health', async () => ({ ok: true, executionEnabled: cfg.enabled }));
+  app.get('/api/health', async () => ({ ok: true, executionEnabled: cfg.enabled, revision: options.revision ?? process.env.BUILD_SHA ?? null }));
   app.get('/api/challenges', listChallenges);
   for (const [suffix, reader, field] of [['', getChallenge, null], ['/explanation', getExplanation, 'markdown'], ['/solution-writeup', getSolutionWriteup, 'markdown']]) {
     app.get(`/api/challenges/:id${suffix}`, async (req, reply) => {

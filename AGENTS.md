@@ -129,6 +129,23 @@ not record secrets, tokens, personal data, or full command output.
 
 ### Change log
 
+- 2026-09-09 — Agent: Added compatibility CI jobs for the repository's legacy
+  required check names so contributors without settings access can satisfy
+  branch protection. Validation: workflow YAML parsing and diff checks passed.
+- 2026-09-09 — Agent: Fixed the Playwright user-isolation request by giving the
+  guest context the configured frontend origin before calling the API.
+  Validation: four of five GitHub browser journeys passed before the fix; local
+  Playwright discovery and TypeScript production build passed afterward.
+- 2026-09-09 — Agent: Corrected the Playwright web-server launcher's Git
+  executable mode so browser CI can start it. Validation: shell syntax and
+  Playwright test discovery passed.
+- 2026-09-09 — Agent: Added challenge contracts, frontend component and browser
+  tests, fork-safe CI, trusted E2B smoke checks, VM/Coolify packaging, and gated
+  GHCR deployment with revision verification. Validation: backend 17/17,
+  frontend 8/8, all 48 challenge contracts, Linux bridge 4/4, CineMatch 5/5,
+  frontend build/lint/coverage, shell/Python/YAML checks passed; local Playwright
+  execution was blocked by missing system browser libraries and unavailable sudo.
+
 - 2026-09-09 — Agent: Reviewed and completed account progress, idempotent grading,
   consented analytics, administrator reporting, UI flows, tests, and operational
   documentation from the analytics progress plan. Validation: backend 16/16 and
