@@ -1,23 +1,67 @@
 name: Trusted E2B smoke
+
 on:
-  schedule: [{ cron: '17 3 * * *' }]
+  schedule:
+    - cron: '17 3 * * *'
   workflow_dispatch:
-permissions: { contents: read }
+
+permissions:
+  contents: read
+
 jobs:
-  smoke:
-    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
-    environment: e2b-smoke
+  guard:
+    name: Verify trusted ref
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with: { node-version: '22.20.0', cache: npm, cache-dependency-path: apps/backend/package-lock.json }
-      - run: npm ci
+      - name: Reject non-default manual runs
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == workflow_dispatch && "$GITHUB_REF_NAME" != "$DEFAULT_BRANCH" ]]; then
+            echo 'Live E2B checks may only run from the default branch.' >&2
+            exit 1
+          fi
+
+  live:
+    name: Build and exercise E2B template
+    needs: guard
+    if: needs.guard.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment:
+      name: e2b-smoke
+    steps:
+      - name: Checkout trusted revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22.20.0'
+          cache: npm
+          cache-dependency-path: apps/backend/package-lock.json
+      - name: Install backend dependencies
         working-directory: apps/backend
-      - name: Require provider configuration
-        env: { E2B_API_KEY: '${{ secrets.E2B_API_KEY }}', E2B_TEMPLATE: '${{ secrets.E2B_TEMPLATE }}' }
-        run: test -n "$E2B_API_KEY" && test -n "$E2B_TEMPLATE"
-      - name: Provider smoke
-        env: { E2B_API_KEY: '${{ secrets.E2B_API_KEY }}', E2B_TEMPLATE: '${{ secrets.E2B_TEMPLATE }}' }
+        run: npm ci
+      - name: Build the versioned E2B template
+        working-directory: apps/backend
+        env:
+          E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
+          E2B_TEMPLATE: ${{ secrets.E2B_TEMPLATE }}
+          E2B_TEMPLATE_MEMORY_MB: '1024'
+          E2B_TEMPLATE_RECORD: /tmp/heisenbug-e2b-template.json
+          BUILD_SHA: ${{ github.sha }}
+        run: node scripts/build-template.js
+      - name: Run live provider smoke
+        working-directory: apps/backend
+        env:
+          E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
+          E2B_TEMPLATE: ${{ secrets.E2B_TEMPLATE }}
         run: node scripts/smoke-e2b.js
+      - name: Upload template release record
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: e2b-template-${{ github.sha }}
+          path: /tmp/heisenbug-e2b-template.json
+          retention-days: 30
