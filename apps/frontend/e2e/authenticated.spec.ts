@@ -28,6 +28,7 @@ test('submission retry records one verified attempt and remains isolated', async
 
   const guest = await browser.newContext()
   const guestPage = await guest.newPage()
+  await guestPage.goto('/challenges')
   const isolated = await api<{ status:number }>(guestPage, '/api/progress')
   expect(isolated.status).toBe(401)
   await guest.close()

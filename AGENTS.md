@@ -129,6 +129,10 @@ not record secrets, tokens, personal data, or full command output.
 
 ### Change log
 
+- 2026-09-09 — Agent: Fixed the Playwright user-isolation request by giving the
+  guest context the configured frontend origin before calling the API.
+  Validation: four of five GitHub browser journeys passed before the fix; local
+  Playwright discovery and TypeScript production build passed afterward.
 - 2026-09-09 — Agent: Corrected the Playwright web-server launcher's Git
   executable mode so browser CI can start it. Validation: shell syntax and
   Playwright test discovery passed.
