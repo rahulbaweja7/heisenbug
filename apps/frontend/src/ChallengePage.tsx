@@ -1,29 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import Editor from "@monaco-editor/react";
 import { API_BASE, type Challenge, type SubmitResult } from "./types";
 import Markdown from "./Markdown";
-import FileTree from "./FileTree";
 import { markSolved } from "./progress";
+import ChallengeWorkspace from "./ChallengeWorkspace";
+import { track } from './analytics';
 import "./ChallengePage.css";
-import WorkspacePanel, { type WorkspaceHandle } from './workspace/WorkspacePanel';
-import { api } from './workspace/api';
-import { eventSessionId, track } from './analytics';
-import { useIdentity } from './IdentityContext';
-import Modal from './Modal';
 
 export default function ChallengePage() {
   const { id } = useParams<{ id: string }>();
   const [challenge, setChallenge] = useState<Challenge | null>(null);
-  const [selectedPath, setActiveFile] = useState<string | null>(null);
-  const [fileContents, setFileContents] = useState<Record<string, string>>({});
-  const activeFile = selectedPath && selectedPath in fileContents ? selectedPath : Object.keys(fileContents)[0] || null;
-  const [result, setResult] = useState<SubmitResult | null>(null);
-  const [running, setRunning] = useState(false);
-  const [executionError, setExecutionError] = useState('');
-  const workspace = useRef<WorkspaceHandle>(null);
-  const submissionRequest = useRef<string | null>(null);
-  const { refresh } = useIdentity();
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [editingTimer, setEditingTimer] = useState(false);
   const [timerInput, setTimerInput] = useState("");
@@ -34,18 +20,17 @@ export default function ChallengePage() {
   const [solutionState, setSolutionState] = useState<
     "idle" | "loading" | "loaded" | "unavailable"
   >("idle");
-  const [showResetConfirm, setShowResetConfirm] = useState(false);
-  const [newFileDialog, setNewFileDialog] = useState<{ value: string; error: string } | null>(null);
+  const [passed, setPassed] = useState(false);
 
   useEffect(() => {
     setChallenge(null);
-    setResult(null);
     setExplanation(null);
     setLoadError(false);
     setLeftTab("description");
     setSolutionWriteup(null);
     setSolutionState("idle");
     setEditingTimer(false);
+    setPassed(false);
     fetch(`${API_BASE}/api/challenges/${id}`)
       .then((r) => {
         if (!r.ok) throw new Error("not found");
@@ -53,23 +38,11 @@ export default function ChallengePage() {
       })
       .then((c: Challenge) => {
         setChallenge(c);
-        let files = c.files;
-        try {
-          const draft = JSON.parse(localStorage.getItem(`heisenbug:draft:${c.meta.id}`) || 'null');
-          if (draft && typeof draft === 'object' && !Array.isArray(draft) && Object.values(draft).every(value => typeof value === 'string')) files = draft;
-        } catch { /* Browser storage can be unavailable. */ }
-        setFileContents(files);
-        setActiveFile(Object.keys(files)[0] || null);
         setSecondsLeft(c.meta.timeLimitMinutes * 60);
         track('challenge_view', c.meta.id);
       })
       .catch(() => setLoadError(true));
   }, [id]);
-
-  useEffect(() => {
-    if (!challenge || challenge.meta.id !== id) return;
-    try { localStorage.setItem(`heisenbug:draft:${id}`, JSON.stringify(fileContents)); } catch { /* Editing remains usable if storage is full. */ }
-  }, [fileContents, challenge, id]);
 
   useEffect(() => {
     const t = setInterval(() => setSecondsLeft((s) => Math.max(0, s - 1)), 1000);
@@ -91,32 +64,13 @@ export default function ChallengePage() {
       .catch(() => setSolutionState("unavailable"));
   }, [leftTab, challenge, solutionState]);
 
-  useEffect(() => {
-    if (!result?.passed || !challenge) return;
+  function handleWorkspaceResult(result: SubmitResult) {
+    setPassed(result.passed);
+    if (!result.passed || !challenge) return;
     markSolved(challenge.meta.id);
     fetch(`${API_BASE}/api/challenges/${challenge.meta.id}/explanation`)
       .then((r) => r.json())
       .then((data: { markdown: string }) => setExplanation(data.markdown));
-  }, [result?.passed, challenge]);
-
-  async function handleSubmit() {
-    if (!challenge) return;
-    setRunning(true);
-    setResult(null);
-    setExecutionError('');
-    try {
-      track('practice_start', challenge.meta.id);
-      const files = await workspace.current?.flush() || fileContents;
-      submissionRequest.current ||= crypto.randomUUID();
-      const response = await api<SubmitResult>(`/api/challenges/${challenge.meta.id}/submit`, { method: 'POST', body: JSON.stringify({ files, requestId: submissionRequest.current, analyticsSessionId: eventSessionId() }) });
-      submissionRequest.current = null;
-      setResult(response);
-      await refresh();
-    } catch (error) {
-      setExecutionError((error as Error).message);
-    } finally {
-      setRunning(false);
-    }
   }
 
   function openTimerEdit() {
@@ -130,32 +84,6 @@ export default function ChallengePage() {
       setSecondsLeft(Math.round(Math.min(180, minutes) * 60));
     }
     setEditingTimer(false);
-  }
-
-  function handleReset() {
-    if (!challenge) return;
-    setShowResetConfirm(true);
-  }
-
-  function confirmReset() {
-    if (!challenge) return;
-    setFileContents(challenge.files);
-    setResult(null);
-    setExplanation(null);
-    setShowResetConfirm(false);
-  }
-
-  function confirmNewFile() {
-    if (!newFileDialog) return;
-    const name = newFileDialog.value.trim();
-    if (!name) { setNewFileDialog(null); return; }
-    if (!/^[a-zA-Z0-9_./-]+$/.test(name) || name.split('/').some(part => !part || part === '.' || part === '..') || name.startsWith('tests/')) {
-      setNewFileDialog({ ...newFileDialog, error: 'Use a relative file path outside tests/.' });
-      return;
-    }
-    setFileContents(previous => ({ ...previous, [name]: previous[name] ?? '' }));
-    setActiveFile(name);
-    setNewFileDialog(null);
   }
 
   if (loadError) {
@@ -213,7 +141,7 @@ export default function ChallengePage() {
         )}
       </header>
 
-      {timeUp && !result?.passed && (
+      {timeUp && !passed && (
         <div className="cp-timeup-banner">
           Time's up — this is untimed practice mode now, keep going and run
           the tests whenever you're ready.
@@ -299,111 +227,13 @@ export default function ChallengePage() {
           )}
         </aside>
 
-        <aside className="cp-explorer">
-          <div className="cp-explorer-heading">Explorer</div>
-          <FileTree
-            paths={Object.keys(fileContents)}
-            activeFile={activeFile || ''}
-            onSelect={setActiveFile}
-          />
-        </aside>
-
-        <main className="cp-workspace">
-          <div className="cp-file-tabs">
-            <div className="cp-file-tabs-scroll">
-              {Object.keys(fileContents).map((path) => (
-                <button
-                  key={path}
-                  className={path === activeFile ? "cp-tab active" : "cp-tab"}
-                  onClick={() => setActiveFile(path)}
-                >
-                  {path}
-                </button>
-              ))}
-            </div>
-            <div className="cp-file-tabs-spacer" />
-            <button className="cp-reset-btn" onClick={() => setNewFileDialog({ value: '', error: '' })}>New file</button>
-            <button className="cp-reset-btn" onClick={handleReset}>
-              Reset
-            </button>
-            <button className="cp-run-btn" onClick={handleSubmit} disabled={running}>
-              {running ? "Running..." : "Run tests"}
-            </button>
-          </div>
-
-          <div className="cp-editor-pane">
-            {activeFile ? <Editor
-              height="100%"
-              language={activeFile.endsWith('.html') ? 'html' : activeFile.endsWith('.md') ? 'markdown' : challenge.meta.language}
-              path={`${challenge.meta.id}/${activeFile}`}
-              value={fileContents[activeFile]}
-              onChange={(value) => { track('practice_start', challenge.meta.id); setFileContents((prev) => ({ ...prev, [activeFile]: value ?? "" })); }}
-              theme="vs-dark"
-              options={{ minimap: { enabled: false }, fontSize: 13 }}
-            /> : <p className="ws-empty">Create a file to begin editing.</p>}
-          </div>
-
-          <WorkspacePanel key={challenge.meta.id} ref={workspace} challengeId={challenge.meta.id} files={fileContents} setFiles={setFileContents} />
-
-          <div className="cp-console">
-            {executionError && <div className="ws-error" role="alert">{executionError}</div>}
-            {!result && (
-              <div className="cp-console-placeholder">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  className="cp-console-icon"
-                >
-                  <path d="M8 9l3 3-3 3" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M13 15h3" strokeLinecap="round" />
-                  <rect x="3" y="4" width="18" height="16" rx="2" />
-                </svg>
-                Run the tests to see results here.
-              </div>
-            )}
-            {result && (
-              <div className={`cp-result ${result.passed ? "pass" : "fail"}`}>
-                <div className="cp-result-heading">
-                  {result.passed ? "All tests passed" : "Tests failed"}
-                </div>
-                <pre>
-                  {result.stdout}
-                  {result.stderr}
-                </pre>
-              </div>
-            )}
-          </div>
-        </main>
+        <ChallengeWorkspace
+          key={challenge.meta.id}
+          challenge={challenge}
+          draftKey={`heisenbug:draft:${challenge.meta.id}`}
+          onResult={handleWorkspaceResult}
+        />
       </div>
-
-      {showResetConfirm && (
-        <Modal
-          title="Reset files?"
-          message="This resets every file back to the starter code. Your current changes can't be recovered."
-          confirmLabel="Reset"
-          danger
-          onConfirm={confirmReset}
-          onCancel={() => setShowResetConfirm(false)}
-        />
-      )}
-
-      {newFileDialog && (
-        <Modal
-          title="New file"
-          message="File path relative to the project root, for example scratch.py."
-          input={{
-            value: newFileDialog.value,
-            onChange: (value) => setNewFileDialog({ value, error: "" }),
-            placeholder: "scratch.py",
-          }}
-          error={newFileDialog.error}
-          confirmLabel="Create"
-          onConfirm={confirmNewFile}
-          onCancel={() => setNewFileDialog(null)}
-        />
-      )}
     </div>
   );
 }
