@@ -126,14 +126,9 @@ export default function LandingPage() {
             <Link to="/challenges" className="lp-cta-btn">
               Start practicing &rarr;
             </Link>
-            <a
-              href="https://github.com/rahulbaweja7/heisenbug"
-              target="_blank"
-              rel="noreferrer"
-              className="lp-cta-btn-ghost"
-            >
-              View on GitHub
-            </a>
+            <Link to="/mock" className="lp-cta-btn-ghost">
+              Take a mock assessment
+            </Link>
           </div>
 
           {challengeCount !== null && (

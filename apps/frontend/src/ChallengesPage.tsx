@@ -67,7 +67,8 @@ export default function ChallengesPage() {
       <header className="ch-header">
         <h1 className="ch-heading">Challenges</h1>
         <p className="ch-subheading">
-          Pick a challenge below and start debugging.
+          Pick a challenge below and start debugging, or{" "}
+          <Link to="/mock" className="ch-mock-link">take a timed mock assessment &rarr;</Link>
         </p>
         <div className="ch-account">
           {identity?.user ? <><span>Signed in as @{identity.user.login}</span><button onClick={() => void signOut()}>Sign out</button>{identity.isAdmin && <Link to="/admin/analytics">Analytics</Link>}</> : <a href={`${API_BASE}/api/auth/github?returnTo=/challenges`}>Sign in with GitHub</a>}

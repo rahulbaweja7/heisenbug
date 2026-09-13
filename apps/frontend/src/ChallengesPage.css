@@ -56,6 +56,16 @@
   margin-top: 8px;
 }
 
+.ch-mock-link {
+  color: #a78bfa;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ch-mock-link:hover {
+  text-decoration: underline;
+}
+
 .ch-search-row {
   max-width: 900px;
   margin: 0 auto 16px;

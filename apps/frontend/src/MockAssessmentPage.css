@@ -1,0 +1,186 @@
+.ma-intro,
+.ma-results {
+  min-height: 100vh;
+  background: #131313;
+  color: #ddd;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  padding: 40px 24px 80px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.ma-intro h1,
+.ma-results h1 {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 24px 0 12px;
+  color: #f5f5f5;
+}
+
+.ma-intro p {
+  color: #999;
+  font-size: 14.5px;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+.ma-error {
+  color: #e07a7a !important;
+  margin-bottom: 16px !important;
+}
+
+.ma-start-btn {
+  background: #a78bfa;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.ma-start-btn:hover {
+  background: #b9a2fb;
+}
+
+.ma-secondary-link {
+  color: #999;
+  text-decoration: none;
+  font-size: 13.5px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ma-secondary-link:hover {
+  color: #ddd;
+}
+
+.ma-score {
+  font-size: 20px !important;
+  font-weight: 700;
+  color: #a78bfa !important;
+  margin-bottom: 24px !important;
+}
+
+.ma-results-table {
+  width: 100%;
+  min-width: 420px;
+  border-collapse: collapse;
+  background: #1a1a1a;
+  border: 1px solid #262626;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 13.5px;
+}
+
+.ma-results-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #777;
+  padding: 12px 16px;
+  border-bottom: 1px solid #262626;
+}
+
+.ma-results-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #202020;
+}
+
+.ma-diff {
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+.ma-diff-easy { color: #6fd67a; }
+.ma-diff-medium { color: #e0b84a; }
+.ma-diff-hard { color: #e07a7a; }
+
+.ma-status {
+  font-weight: 600;
+}
+
+.ma-status-passed { color: #6fd67a; }
+.ma-status-failed { color: #e07a7a; }
+.ma-status-not-attempted { color: #777; }
+
+.ma-results-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.ma-tab-strip {
+  display: flex;
+  align-items: center;
+  background: #1a1a1a;
+  border-bottom: 1px solid #262626;
+  padding: 0 8px;
+  flex-shrink: 0;
+  overflow-x: auto;
+}
+
+.ma-challenge-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #999;
+  padding: 12px 14px;
+  min-height: 44px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ma-challenge-tab:hover {
+  color: #ddd;
+}
+
+.ma-challenge-tab.active {
+  color: #fff;
+  border-bottom-color: #a78bfa;
+}
+
+.ma-tab-check {
+  font-size: 12px;
+}
+
+.ma-tab-check.pass { color: #6fd67a; }
+.ma-tab-check.fail { color: #e07a7a; }
+
+.ma-body {
+  grid-template-columns: 200px 1fr !important;
+}
+
+.ma-results-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 900px) {
+  .ma-body {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .ma-intro,
+  .ma-results {
+    padding: 28px 16px 60px;
+  }
+
+  .ma-results-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
