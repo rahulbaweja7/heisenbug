@@ -66,13 +66,13 @@
 
 .ma-results-table {
   width: 100%;
+  min-width: 420px;
   border-collapse: collapse;
   background: #1a1a1a;
   border: 1px solid #262626;
   border-radius: 10px;
   overflow: hidden;
   font-size: 13.5px;
-  margin-bottom: 28px;
 }
 
 .ma-results-table th {
@@ -130,6 +130,7 @@
   border-bottom: 2px solid transparent;
   color: #999;
   padding: 12px 14px;
+  min-height: 44px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -158,4 +159,28 @@
 
 .ma-body {
   grid-template-columns: 200px 1fr !important;
+}
+
+.ma-results-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 900px) {
+  .ma-body {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .ma-intro,
+  .ma-results {
+    padding: 28px 16px 60px;
+  }
+
+  .ma-results-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
 }

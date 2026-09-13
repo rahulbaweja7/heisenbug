@@ -162,24 +162,26 @@ export default function MockAssessmentPage() {
         <Link to="/" className="cp-brand">Heisenbug</Link>
         <h1>Assessment complete</h1>
         <p className="ma-score">{solvedCount}/{challenges.length} solved</p>
-        <table className="ma-results-table">
-          <thead>
-            <tr><th>Challenge</th><th>Difficulty</th><th>Result</th></tr>
-          </thead>
-          <tbody>
-            {challenges.map((c) => {
-              const result = results[c.meta.id];
-              const status = !result ? "Not attempted" : result.passed ? "Passed" : "Failed";
-              return (
-                <tr key={c.meta.id}>
-                  <td>{c.meta.title}</td>
-                  <td className={`ma-diff ma-diff-${c.meta.difficulty}`}>{c.meta.difficulty}</td>
-                  <td className={`ma-status ma-status-${status.toLowerCase().replace(" ", "-")}`}>{status}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <div className="ma-results-table-wrap">
+          <table className="ma-results-table">
+            <thead>
+              <tr><th>Challenge</th><th>Difficulty</th><th>Result</th></tr>
+            </thead>
+            <tbody>
+              {challenges.map((c) => {
+                const result = results[c.meta.id];
+                const status = !result ? "Not attempted" : result.passed ? "Passed" : "Failed";
+                return (
+                  <tr key={c.meta.id}>
+                    <td>{c.meta.title}</td>
+                    <td className={`ma-diff ma-diff-${c.meta.difficulty}`}>{c.meta.difficulty}</td>
+                    <td className={`ma-status ma-status-${status.toLowerCase().replace(" ", "-")}`}>{status}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
         <div className="ma-results-actions">
           <button className="ma-start-btn" onClick={startOver}>Start a new mock assessment</button>
           <Link to="/challenges" className="ma-secondary-link">Back to challenges</Link>
