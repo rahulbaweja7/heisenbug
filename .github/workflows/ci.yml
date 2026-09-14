@@ -108,7 +108,7 @@ jobs:
         run: docker build --build-arg BUILD_SHA="$GITHUB_SHA" -f apps/backend/Dockerfile -t heisenbug-backend:test .
       - name: Smoke-test container health and catalog
         run: |
-          docker run -d --name heisenbug-backend-test -p 127.0.0.1:4001:4001 -e EXECUTION_ENABLED=false heisenbug-backend:test
+          docker run -d --name heisenbug-backend-test -p 127.0.0.1:4001:4001 -e NODE_ENV=test -e EXECUTION_ENABLED=false heisenbug-backend:test
           trap 'docker logs heisenbug-backend-test; docker rm -f heisenbug-backend-test' EXIT
           for attempt in {1..30}; do
             curl --fail --silent http://127.0.0.1:4001/api/health > health.json && break

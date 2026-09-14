@@ -13,6 +13,9 @@ import { registerProgress } from './progress.js';
 import { registerAnalytics } from './analytics.js';
 export async function buildApp(options = {}) {
   const cfg = options.config || config();
+  if (process.env.NODE_ENV === 'production' && !cfg.enabled) {
+    throw new Error('Refusing to start: EXECUTION_ENABLED=false runs unsandboxed code execution and must never run with NODE_ENV=production. Configure E2B and set EXECUTION_ENABLED=true, or unset NODE_ENV for local/dev use.');
+  }
   const app = Fastify({ logger: options.logger ?? true, bodyLimit: 1500000, disableRequestLogging: true });
   const db = options.db || openStore(cfg.dbPath);
   await app.register(cors, { origin: cfg.appOrigin, credentials: true });
