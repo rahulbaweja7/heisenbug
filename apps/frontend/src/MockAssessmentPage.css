@@ -1,19 +1,69 @@
-.ma-intro,
-.ma-results {
+.ma-page {
+  position: relative;
   min-height: 100vh;
   background: #131313;
   color: #ddd;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  padding: 40px 24px 80px;
+  overflow-x: hidden;
+}
+
+.ma-bg-grid {
+  position: absolute;
+  inset: 0;
+  height: 480px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+  mask-image: linear-gradient(to bottom, black, transparent);
+  pointer-events: none;
+}
+
+.ma-glow {
+  position: absolute;
+  top: -220px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1100px;
+  height: 500px;
+  background: radial-gradient(ellipse 55% 60% at 50% 45%, rgba(167, 139, 250, 0.2) 0%, rgba(167, 139, 250, 0) 70%);
+  pointer-events: none;
+}
+
+.ma-intro,
+.ma-results {
+  position: relative;
+  padding: 0 24px 80px;
   max-width: 640px;
   margin: 0 auto;
 }
 
-.ma-intro h1,
+.ma-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a78bfa;
+  background: rgba(167, 139, 250, 0.1);
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  border-radius: 999px;
+  padding: 4px 12px;
+  margin: 24px 0 20px;
+}
+
+.ma-intro h1 {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0 0 12px;
+  color: #f5f5f5;
+}
+
 .ma-results h1 {
   font-size: 28px;
   font-weight: 800;
-  margin: 24px 0 12px;
+  margin: 24px 0 16px;
   color: #f5f5f5;
 }
 
@@ -22,6 +72,32 @@
   font-size: 14.5px;
   line-height: 1.7;
   margin-bottom: 28px;
+}
+
+.ma-intro-stats {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+.ma-intro-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ma-intro-stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #f5f5f5;
+  font-variant-numeric: tabular-nums;
+}
+
+.ma-intro-stat-label {
+  font-size: 11px;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .ma-error {
@@ -57,11 +133,47 @@
   color: #ddd;
 }
 
-.ma-score {
-  font-size: 20px !important;
-  font-weight: 700;
-  color: #a78bfa !important;
-  margin-bottom: 24px !important;
+.ma-score-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid;
+  margin-bottom: 28px;
+}
+
+.ma-score-value {
+  font-size: 22px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.ma-score-caption {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+
+.ma-score-full {
+  border-color: #6fd67a;
+  color: #6fd67a;
+  background: rgba(111, 214, 122, 0.08);
+}
+
+.ma-score-partial {
+  border-color: #e0b84a;
+  color: #e0b84a;
+  background: rgba(224, 184, 74, 0.08);
+}
+
+.ma-score-none {
+  border-color: #e07a7a;
+  color: #e07a7a;
+  background: rgba(224, 122, 122, 0.08);
 }
 
 .ma-results-table {
@@ -107,6 +219,13 @@
 .ma-status-passed { color: #6fd67a; }
 .ma-status-failed { color: #e07a7a; }
 .ma-status-not-attempted { color: #777; }
+
+.ma-status-icon {
+  display: inline-block;
+  width: 14px;
+  margin-right: 4px;
+  text-align: center;
+}
 
 .ma-results-actions {
   display: flex;
@@ -175,7 +294,11 @@
 @media (max-width: 640px) {
   .ma-intro,
   .ma-results {
-    padding: 28px 16px 60px;
+    padding: 0 16px 60px;
+  }
+
+  .ma-intro-stats {
+    gap: 24px;
   }
 
   .ma-results-actions {

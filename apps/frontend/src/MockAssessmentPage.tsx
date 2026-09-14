@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { API_BASE, type Challenge, type Meta, type SubmitResult } from "./types";
 import { markSolved } from "./progress";
 import ChallengeWorkspace from "./ChallengeWorkspace";
+import Navbar from "./Navbar";
 import "./MockAssessmentPage.css";
 
 const SESSION_KEY = "heisenbug:mock:session";
@@ -137,16 +138,35 @@ export default function MockAssessmentPage() {
 
   if (phase === "intro") {
     return (
-      <div className="ma-intro">
-        <Link to="/" className="cp-brand">Heisenbug</Link>
-        <h1>Mock Assessment</h1>
-        <p>
-          Three challenges — one easy, one medium, one hard — picked at random.
-          {" "}{SESSION_MINUTES} minutes on the clock, one score at the end.
-          The closest thing here to sitting down and doing the real OA.
-        </p>
-        {error && <p className="ma-error" role="alert">{error}</p>}
-        <button className="ma-start-btn" onClick={startSession}>Start mock assessment</button>
+      <div className="ma-page">
+        <div className="ma-bg-grid" aria-hidden="true" />
+        <div className="ma-glow" aria-hidden="true" />
+        <div className="ma-intro">
+          <Navbar />
+          <span className="ma-eyebrow">Timed practice</span>
+          <h1>Mock Assessment</h1>
+          <p>
+            Three challenges — one easy, one medium, one hard — picked at random.
+            One score at the end. The closest thing here to sitting down and
+            doing the real OA.
+          </p>
+          <div className="ma-intro-stats">
+            <div className="ma-intro-stat">
+              <span className="ma-intro-stat-value">3</span>
+              <span className="ma-intro-stat-label">challenges</span>
+            </div>
+            <div className="ma-intro-stat">
+              <span className="ma-intro-stat-value">{SESSION_MINUTES}</span>
+              <span className="ma-intro-stat-label">minutes</span>
+            </div>
+            <div className="ma-intro-stat">
+              <span className="ma-intro-stat-value">1</span>
+              <span className="ma-intro-stat-label">score</span>
+            </div>
+          </div>
+          {error && <p className="ma-error" role="alert">{error}</p>}
+          <button className="ma-start-btn" onClick={startSession}>Start mock assessment &rarr;</button>
+        </div>
       </div>
     );
   }
@@ -157,34 +177,45 @@ export default function MockAssessmentPage() {
 
   if (phase === "results") {
     const solvedCount = challenges.filter((c) => results[c.meta.id]?.passed).length;
+    const scoreTier = solvedCount === challenges.length ? "full" : solvedCount === 0 ? "none" : "partial";
     return (
-      <div className="ma-results">
-        <Link to="/" className="cp-brand">Heisenbug</Link>
-        <h1>Assessment complete</h1>
-        <p className="ma-score">{solvedCount}/{challenges.length} solved</p>
-        <div className="ma-results-table-wrap">
-          <table className="ma-results-table">
-            <thead>
-              <tr><th>Challenge</th><th>Difficulty</th><th>Result</th></tr>
-            </thead>
-            <tbody>
-              {challenges.map((c) => {
-                const result = results[c.meta.id];
-                const status = !result ? "Not attempted" : result.passed ? "Passed" : "Failed";
-                return (
-                  <tr key={c.meta.id}>
-                    <td>{c.meta.title}</td>
-                    <td className={`ma-diff ma-diff-${c.meta.difficulty}`}>{c.meta.difficulty}</td>
-                    <td className={`ma-status ma-status-${status.toLowerCase().replace(" ", "-")}`}>{status}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        <div className="ma-results-actions">
-          <button className="ma-start-btn" onClick={startOver}>Start a new mock assessment</button>
-          <Link to="/challenges" className="ma-secondary-link">Back to challenges</Link>
+      <div className="ma-page">
+        <div className="ma-bg-grid" aria-hidden="true" />
+        <div className="ma-glow" aria-hidden="true" />
+        <div className="ma-results">
+          <Navbar />
+          <h1>Assessment complete</h1>
+          <div className={`ma-score-badge ma-score-${scoreTier}`}>
+            <span className="ma-score-value">{solvedCount}/{challenges.length}</span>
+            <span className="ma-score-caption">solved</span>
+          </div>
+          <div className="ma-results-table-wrap">
+            <table className="ma-results-table">
+              <thead>
+                <tr><th>Challenge</th><th>Difficulty</th><th>Result</th></tr>
+              </thead>
+              <tbody>
+                {challenges.map((c) => {
+                  const result = results[c.meta.id];
+                  const status = !result ? "Not attempted" : result.passed ? "Passed" : "Failed";
+                  const icon = !result ? "–" : result.passed ? "✓" : "✗";
+                  return (
+                    <tr key={c.meta.id}>
+                      <td>{c.meta.title}</td>
+                      <td className={`ma-diff ma-diff-${c.meta.difficulty}`}>{c.meta.difficulty}</td>
+                      <td className={`ma-status ma-status-${status.toLowerCase().replace(" ", "-")}`}>
+                        <span className="ma-status-icon">{icon}</span>{status}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div className="ma-results-actions">
+            <button className="ma-start-btn" onClick={startOver}>Start a new mock assessment</button>
+            <Link to="/challenges" className="ma-secondary-link">Back to challenges</Link>
+          </div>
         </div>
       </div>
     );
