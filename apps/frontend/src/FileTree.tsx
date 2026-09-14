@@ -59,28 +59,34 @@ function TreeNodeView({
 }) {
   return (
     <>
-      {node.children.map((child) => (
-        <div key={child.path}>
-          <button
-            className={`ft-node ${!child.isFile ? "ft-folder" : ""} ${
-              child.isFile && child.path === activeFile ? "active" : ""
-            }`}
-            style={{ paddingLeft: 12 + depth * 14 }}
-            onClick={() => child.isFile && onSelect(child.path)}
-          >
-            <span className="ft-icon">{child.isFile ? <FileIcon /> : <FolderIcon />}</span>
-            {child.name}
-          </button>
-          {!child.isFile && (
+      {node.children.map((child) =>
+        child.isFile ? (
+          <div key={child.path}>
+            <button
+              className={`ft-node ${child.path === activeFile ? "active" : ""}`}
+              style={{ paddingLeft: 12 + depth * 14 }}
+              onClick={() => onSelect(child.path)}
+              aria-current={child.path === activeFile ? "true" : undefined}
+            >
+              <span className="ft-icon" aria-hidden="true"><FileIcon /></span>
+              {child.name}
+            </button>
+          </div>
+        ) : (
+          <div key={child.path}>
+            <div className="ft-node ft-folder" style={{ paddingLeft: 12 + depth * 14 }}>
+              <span className="ft-icon" aria-hidden="true"><FolderIcon /></span>
+              {child.name}
+            </div>
             <TreeNodeView
               node={child}
               depth={depth + 1}
               activeFile={activeFile}
               onSelect={onSelect}
             />
-          )}
-        </div>
-      ))}
+          </div>
+        )
+      )}
     </>
   );
 }

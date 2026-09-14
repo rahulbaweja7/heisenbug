@@ -95,7 +95,7 @@
 
 .ma-intro-stat-label {
   font-size: 11px;
-  color: #777;
+  color: #888;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -193,7 +193,7 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #777;
+  color: #888;
   padding: 12px 16px;
   border-bottom: 1px solid #262626;
 }
@@ -218,7 +218,7 @@
 
 .ma-status-passed { color: #6fd67a; }
 .ma-status-failed { color: #e07a7a; }
-.ma-status-not-attempted { color: #777; }
+.ma-status-not-attempted { color: #888; }
 
 .ma-status-icon {
   display: inline-block;
