@@ -133,7 +133,7 @@ export default function MockAssessmentPage() {
   }
 
   if (phase === "loading") {
-    return <div className="cp-loading">Loading mock assessment...</div>;
+    return <div className="cp-loading"><span className="cp-spinner" />Loading mock assessment...</div>;
   }
 
   if (phase === "intro") {
